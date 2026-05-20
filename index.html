@@ -21,14 +21,8 @@
           </button>
 
           <div class="opened-invite" aria-hidden="true">
-            <div class="paper-card">
-              <p class="invite-kicker">Please join us for</p>
-              <h1>Ahmed & Christine</h1>
-              <p class="invite-subtitle">The engagement celebration</p>
-              <div class="divider"><span></span><b>♥</b><span></span></div>
-              <p class="invite-date">August 8, 2026 at 6 PM</p>
-              <p class="invite-place">Village Loft</p>
-              <p class="invite-address">2901 Bayview Ave, Suite 300<br />North York, ON M2K 2S3</p>
+            <div class="paper-card image-card">
+              <img src="/assets/invitation.webp" alt="The engagement of Ahmed and Christine, Saturday August 8, 2026 at 7 PM, Village Loft, 2901 Bayview Ave, Suite 300, North York, ON M2K 2S3" />
             </div>
           </div>
         </div>
@@ -55,7 +49,7 @@
 
             <fieldset>
               <legend>Will you be attending?</legend>
-              <div class="attendance-options">
+              <div class="option-grid">
                 <label for="attendanceAccept">
                   <input id="attendanceAccept" type="radio" name="attendance" value="accept" required />
                   <span>Joyfully accept</span>
@@ -67,6 +61,30 @@
               </div>
             </fieldset>
 
+            <fieldset>
+              <legend>Will you bring a plus one?</legend>
+              <div class="option-grid">
+                <label for="plusOneYes">
+                  <input id="plusOneYes" type="radio" name="plusOne" value="yes" required />
+                  <span>Yes</span>
+                </label>
+                <label for="plusOneNo">
+                  <input id="plusOneNo" type="radio" name="plusOne" value="no" />
+                  <span>No</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label id="plusOneDetails" hidden>
+              <span>Plus-one name</span>
+              <input name="plusOneName" autocomplete="name" placeholder="Their first and last name" />
+            </label>
+
+            <label>
+              <span>Dietary restrictions</span>
+              <textarea name="dietaryRestrictions" rows="3" placeholder="Allergies, restrictions, or meal notes"></textarea>
+            </label>
+
             <label>
               <span>A note for the couple</span>
               <textarea name="note" rows="4" placeholder="Share a wish, a memory, or a song request..."></textarea>
@@ -76,21 +94,6 @@
             <p class="form-message" id="formMessage" role="status"></p>
           </form>
         </div>
-      </section>
-
-      <section class="admin-section" aria-label="RSVP tracking">
-        <div class="admin-header">
-          <div>
-            <p>Guest tracking</p>
-            <h2>Responses</h2>
-          </div>
-          <button id="refreshAdmin" type="button">Refresh</button>
-        </div>
-        <div class="stats">
-          <div><strong id="acceptCount">0</strong><span>Coming</span></div>
-          <div><strong id="declineCount">0</strong><span>Not coming</span></div>
-        </div>
-        <div class="response-list" id="responseList"></div>
       </section>
     </main>
 
