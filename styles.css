@@ -68,21 +68,30 @@ textarea {
 .closed-envelope {
   display: block;
   position: relative;
-  width: min(100%, 66vh);
+  width: min(92vw, 560px);
+  aspect-ratio: 1.42;
+  background:
+    linear-gradient(145deg, transparent 49.6%, rgba(169, 134, 66, 0.26) 50%, transparent 50.4%),
+    linear-gradient(215deg, transparent 49.6%, rgba(169, 134, 66, 0.22) 50%, transparent 50.4%),
+    linear-gradient(180deg, #fffdf7 0%, #f3e7d4 100%);
+  border: 1px solid rgba(169, 134, 66, 0.36);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
   filter: drop-shadow(0 24px 34px rgba(82, 63, 29, 0.22));
+  overflow: hidden;
 }
 
-.closed-envelope img {
-  width: 100%;
-  max-height: 86vh;
-  object-fit: contain;
-  display: block;
-  border-radius: 3px;
+.envelope-flap {
+  position: absolute;
+  inset: 0 0 42%;
+  background: linear-gradient(135deg, #f7efe1 0%, #fffdf7 54%, #e9d8bd 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-bottom: 1px solid rgba(169, 134, 66, 0.32);
 }
 
 .invite-label {
   position: absolute;
-  inset: auto 0 13.5% 0;
+  inset: auto 0 18% 0;
   margin: auto;
   width: max-content;
   max-width: 68%;
@@ -92,7 +101,7 @@ textarea {
   font-size: clamp(0.78rem, 2vw, 1.08rem);
   line-height: 1;
   padding: 0.9rem 1.2rem;
-  background: rgba(255, 253, 247, 0.64);
+  background: rgba(255, 253, 247, 0.78);
   border: 1px solid rgba(169, 134, 66, 0.3);
   backdrop-filter: blur(3px);
 }
@@ -108,16 +117,77 @@ textarea {
   pointer-events: none;
 }
 
-.paper-card {
-  width: min(88vw, 620px);
-  background: var(--ivory);
-  box-shadow: var(--shadow);
-  transform: rotateX(7deg);
+.paper-card,
+.rsvp-art {
+  border: 1px solid rgba(169, 134, 66, 0.32);
+  background:
+    linear-gradient(90deg, rgba(169, 134, 66, 0.14) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
+    linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(251, 248, 240, 0.96));
 }
 
-.paper-card img {
-  width: 100%;
+.paper-card {
+  width: min(88vw, 620px);
+  min-height: min(82vh, 780px);
+  padding: clamp(2rem, 5vw, 4rem);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transform: rotateX(7deg);
+  display: grid;
+  align-content: center;
+  color: var(--gold);
+}
+
+.invite-kicker,
+.invite-subtitle,
+.invite-date,
+.invite-place,
+.invite-address {
+  margin: 0;
+}
+
+.invite-kicker,
+.invite-subtitle,
+.reply-by,
+form label span,
+legend {
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: clamp(0.72rem, 2vw, 0.9rem);
+  color: #bc8e46;
+}
+
+.paper-card h1,
+.rsvp-art h2,
+.admin-header h2 {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  line-height: 0.96;
+  color: #bf8736;
+}
+
+.paper-card h1 {
+  font-size: clamp(3.1rem, 10vw, 5.8rem);
+  margin: 1rem 0 0.7rem;
+}
+
+.invite-date {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--deep-gold);
+}
+
+.invite-place {
+  margin-top: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #7b663f;
+}
+
+.invite-address {
+  margin-top: 0.4rem;
+  line-height: 1.6;
+  color: #7b663f;
 }
 
 .envelope-scene.is-open .envelope-button {
@@ -160,20 +230,7 @@ textarea {
 .rsvp-art {
   width: min(100%, 760px);
   padding: clamp(1.8rem, 5vw, 3.6rem);
-  background:
-    linear-gradient(rgba(255, 253, 247, 0.92), rgba(255, 253, 247, 0.92)),
-    url("/assets/rsvp-reference.png") center / cover;
   color: var(--gold);
-}
-
-.reply-by,
-form label span,
-legend {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.34em;
-  font-size: clamp(0.72rem, 2vw, 0.9rem);
-  color: #bc8e46;
 }
 
 .reply-by {
@@ -181,14 +238,9 @@ legend {
   margin-bottom: 0.7rem;
 }
 
-h1 {
-  margin: 0;
+.rsvp-art h2 {
   text-align: center;
-  font-family: "Great Vibes", cursive;
   font-size: clamp(3.2rem, 10vw, 5rem);
-  font-weight: 400;
-  line-height: 0.96;
-  color: #bf8736;
 }
 
 .divider {
@@ -332,9 +384,7 @@ fieldset {
 }
 
 .admin-header h2 {
-  font-family: "Great Vibes", cursive;
   font-size: clamp(2.8rem, 8vw, 4.5rem);
-  font-weight: 400;
   color: var(--deep-gold);
 }
 
@@ -411,6 +461,14 @@ fieldset {
   .envelope-scene {
     width: 96vw;
     height: 122vw;
+  }
+
+  .closed-envelope {
+    width: min(88vw, 460px);
+  }
+
+  .paper-card {
+    min-height: 70vh;
   }
 
   .attendance-options,
