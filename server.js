@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,14 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.static(__dirname));
 
 const rsvpFile = path.join(DATA_DIR, "rsvps.json");
+
+function makeId() {
+  if (crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
 
 function ensureStorage() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -24,8 +33,29 @@ function ensureStorage() {
 
 function readRsvps() {
   ensureStorage();
+
   const data = JSON.parse(fs.readFileSync(rsvpFile, "utf8"));
-  return Array.isArray(data) ? data : [];
+  const rsvps = Array.isArray(data) ? data : [];
+
+  let changed = false;
+
+  const normalizedRsvps = rsvps.map((item) => {
+    if (!item.id) {
+      changed = true;
+      return {
+        ...item,
+        id: makeId()
+      };
+    }
+
+    return item;
+  });
+
+  if (changed) {
+    fs.writeFileSync(rsvpFile, JSON.stringify(normalizedRsvps, null, 2));
+  }
+
+  return normalizedRsvps;
 }
 
 function writeRsvps(rsvps) {
@@ -48,6 +78,15 @@ function isAdminRequest(req) {
   return Boolean(ADMIN_KEY) && req.get("x-admin-key") === ADMIN_KEY;
 }
 
+function requireAdmin(req, res) {
+  if (!isAdminRequest(req)) {
+    res.status(401).json({ error: "Admin access required" });
+    return false;
+  }
+
+  return true;
+}
+
 function saveRsvp(req, res) {
   try {
     const {
@@ -61,15 +100,23 @@ function saveRsvp(req, res) {
     } = req.body;
 
     if (!name || !email || !["accept", "decline"].includes(attendance)) {
-      return res.status(400).json({ success: false, error: "Please complete the RSVP form." });
+      return res.status(400).json({
+        success: false,
+        error: "Please complete the RSVP form."
+      });
     }
 
     if (!["yes", "no"].includes(plusOne)) {
-      return res.status(400).json({ success: false, error: "Please choose a plus-one option." });
+      return res.status(400).json({
+        success: false,
+        error: "Please choose a plus-one option."
+      });
     }
 
     const rsvps = readRsvps();
+
     const savedRsvp = {
+      id: makeId(),
       name: String(name).trim(),
       email: String(email).trim(),
       attendance,
@@ -94,15 +141,64 @@ app.post("/api/rsvps", saveRsvp);
 app.post("/api/rsvp", saveRsvp);
 
 app.get("/api/rsvps", (req, res) => {
-  if (!isAdminRequest(req)) {
-    return res.status(401).json({ error: "Admin access required" });
-  }
+  if (!requireAdmin(req, res)) return;
 
   try {
     res.json(buildRsvpResponse(readRsvps()));
   } catch (error) {
     console.error("Error reading RSVPs:", error);
     res.status(500).json({ error: "Could not read RSVPs" });
+  }
+});
+
+app.delete("/api/rsvps/:id", (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const { id } = req.params;
+    const rsvps = readRsvps();
+
+    const updatedRsvps = rsvps.filter((item) => item.id !== id);
+
+    if (updatedRsvps.length === rsvps.length) {
+      return res.status(404).json({
+        success: false,
+        error: "RSVP not found"
+      });
+    }
+
+    writeRsvps(updatedRsvps);
+
+    res.json({
+      success: true,
+      message: "RSVP deleted",
+      ...buildRsvpResponse(updatedRsvps)
+    });
+  } catch (error) {
+    console.error("Error deleting RSVP:", error);
+    res.status(500).json({ error: "Could not delete RSVP" });
+  }
+});
+
+app.delete("/api/rsvps", (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    writeRsvps([]);
+
+    res.json({
+      success: true,
+      message: "All RSVP responses deleted",
+      summary: {
+        accept: 0,
+        decline: 0,
+        plusOnes: 0
+      },
+      rsvps: []
+    });
+  } catch (error) {
+    console.error("Error clearing RSVPs:", error);
+    res.status(500).json({ error: "Could not clear RSVPs" });
   }
 });
 
