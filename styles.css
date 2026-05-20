@@ -13,6 +13,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   color: var(--ink-soft);
@@ -128,7 +132,7 @@ textarea {
 .paper-card {
   width: min(88vw, 620px);
   min-height: min(82vh, 780px);
-  padding: clamp(2rem, 5vw, 4rem);
+  padding: clamp(1rem, 3vw, 1.5rem);
   box-shadow: var(--shadow);
   text-align: center;
   transform: rotateX(7deg);
@@ -137,57 +141,15 @@ textarea {
   color: var(--gold);
 }
 
-.invite-kicker,
-.invite-subtitle,
-.invite-date,
-.invite-place,
-.invite-address {
-  margin: 0;
+.image-card {
+  background: var(--ivory);
 }
 
-.invite-kicker,
-.invite-subtitle,
-.reply-by,
-form label span,
-legend {
+.image-card img {
   display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.26em;
-  font-size: clamp(0.72rem, 2vw, 0.9rem);
-  color: #bc8e46;
-}
-
-.paper-card h1,
-.rsvp-art h2,
-.admin-header h2 {
-  margin: 0;
-  font-family: "Great Vibes", cursive;
-  font-weight: 400;
-  line-height: 0.96;
-  color: #bf8736;
-}
-
-.paper-card h1 {
-  font-size: clamp(3.1rem, 10vw, 5.8rem);
-  margin: 1rem 0 0.7rem;
-}
-
-.invite-date {
-  font-size: clamp(1.6rem, 5vw, 2.4rem);
-  color: var(--deep-gold);
-}
-
-.invite-place {
-  margin-top: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  color: #7b663f;
-}
-
-.invite-address {
-  margin-top: 0.4rem;
-  line-height: 1.6;
-  color: #7b663f;
+  width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
 }
 
 .envelope-scene.is-open .envelope-button {
@@ -233,9 +195,28 @@ legend {
   color: var(--gold);
 }
 
+.reply-by,
+form label span,
+legend {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: clamp(0.72rem, 2vw, 0.9rem);
+  color: #bc8e46;
+}
+
 .reply-by {
   text-align: center;
   margin-bottom: 0.7rem;
+}
+
+.rsvp-art h2,
+.admin-header h2 {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  line-height: 0.96;
+  color: #bf8736;
 }
 
 .rsvp-art h2 {
@@ -295,24 +276,24 @@ fieldset {
   padding: 0;
 }
 
-.attendance-options {
+.option-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 0.9rem;
 }
 
-.attendance-options label {
+.option-grid label {
   min-height: 3.5rem;
 }
 
-.attendance-options input {
+.option-grid input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-.attendance-options span {
+.option-grid span {
   min-height: 3.5rem;
   display: grid;
   place-items: center;
@@ -322,7 +303,7 @@ fieldset {
   transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
-.attendance-options input:checked + span {
+.option-grid input:checked + span {
   background: #b9883c;
   color: #fffdf7;
   border-color: #b9883c;
@@ -354,6 +335,11 @@ fieldset {
   margin: 0;
   text-align: center;
   color: var(--deep-gold);
+}
+
+.admin-page {
+  min-height: 100vh;
+  padding: 4rem 1rem;
 }
 
 .admin-section {
@@ -394,9 +380,14 @@ fieldset {
   letter-spacing: 0.2em;
 }
 
+.admin-login {
+  margin: 2rem 0;
+  max-width: 32rem;
+}
+
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin: 1.5rem 0;
 }
@@ -468,10 +459,10 @@ fieldset {
   }
 
   .paper-card {
-    min-height: 70vh;
+    min-height: auto;
   }
 
-  .attendance-options,
+  .option-grid,
   .stats {
     grid-template-columns: 1fr;
   }
