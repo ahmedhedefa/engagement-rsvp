@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ahmed & Christine RSVP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="invite-stage" aria-label="Engagement invitation">
+        <div class="envelope-scene" id="envelopeScene">
+          <button class="envelope-button" id="openInvite" type="button" aria-label="Open invitation">
+            <span class="closed-envelope" aria-hidden="true">
+              <img src="/assets/envelope.png" alt="" />
+              <span class="invite-label">you're invited</span>
+            </span>
+          </button>
+
+          <div class="opened-invite" aria-hidden="true">
+            <div class="paper-card">
+              <img src="/assets/invitation.png" alt="The engagement of Ahmed and Christine, August 8, 2026 at 6 PM, Village Loft, 2901 Bayview Ave, Suite 300, North York, ON M2K 2S3" />
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-cue" id="scrollCue" aria-hidden="true">RSVP below</div>
+      </section>
+
+      <section class="rsvp-section" id="rsvp">
+        <div class="rsvp-art">
+          <div class="reply-by">Reply by July 15</div>
+          <h1>RSVP</h1>
+          <div class="divider"><span></span><b>♥</b><span></span></div>
+
+          <form id="rsvpForm">
+            <label>
+              <span>Your name</span>
+              <input name="name" autocomplete="name" placeholder="First and last name" required />
+            </label>
+
+            <label>
+              <span>Email</span>
+              <input name="email" type="email" autocomplete="email" placeholder="So we can stay in touch" required />
+            </label>
+
+            <fieldset>
+              <legend>Will you be attending?</legend>
+              <div class="attendance-options">
+                <label for="attendanceAccept">
+                  <input id="attendanceAccept" type="radio" name="attendance" value="accept" required />
+                  <span>Joyfully accept</span>
+                </label>
+                <label for="attendanceDecline">
+                  <input id="attendanceDecline" type="radio" name="attendance" value="decline" />
+                  <span>Regretfully decline</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <label>
+              <span>A note for the couple</span>
+              <textarea name="note" rows="4" placeholder="Share a wish, a memory, or a song request..."></textarea>
+            </label>
+
+            <button class="send-button" type="submit">Send reply</button>
+            <p class="form-message" id="formMessage" role="status"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="admin-section" aria-label="RSVP tracking">
+        <div class="admin-header">
+          <div>
+            <p>Guest tracking</p>
+            <h2>Responses</h2>
+          </div>
+          <button id="refreshAdmin" type="button">Refresh</button>
+        </div>
+        <div class="stats">
+          <div><strong id="acceptCount">0</strong><span>Coming</span></div>
+          <div><strong id="declineCount">0</strong><span>Not coming</span></div>
+        </div>
+        <div class="response-list" id="responseList"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
