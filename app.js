@@ -3,10 +3,9 @@ const openInvite = document.getElementById("openInvite");
 const scrollCue = document.getElementById("scrollCue");
 const form = document.getElementById("rsvpForm");
 const message = document.getElementById("formMessage");
-const responseList = document.getElementById("responseList");
-const acceptCount = document.getElementById("acceptCount");
-const declineCount = document.getElementById("declineCount");
-const refreshAdmin = document.getElementById("refreshAdmin");
+const plusOneYes = document.getElementById("plusOneYes");
+const plusOneNo = document.getElementById("plusOneNo");
+const plusOneDetails = document.getElementById("plusOneDetails");
 
 openInvite.addEventListener("click", () => {
   envelopeScene.classList.add("is-open");
@@ -15,6 +14,20 @@ openInvite.addEventListener("click", () => {
     document.getElementById("rsvp").scrollIntoView({ behavior: "smooth", block: "start" });
   }, 1450);
 });
+
+function updatePlusOneDetails() {
+  const isVisible = plusOneYes.checked;
+  plusOneDetails.hidden = !isVisible;
+  plusOneDetails.querySelector("input").required = isVisible;
+
+  if (!isVisible) {
+    plusOneDetails.querySelector("input").value = "";
+  }
+}
+
+plusOneYes.addEventListener("change", updatePlusOneDetails);
+plusOneNo.addEventListener("change", updatePlusOneDetails);
+updatePlusOneDetails();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -36,57 +49,9 @@ form.addEventListener("submit", async (event) => {
     }
 
     form.reset();
+    updatePlusOneDetails();
     message.textContent = "Thank you. Your reply has been saved.";
-    loadAdmin();
   } catch (error) {
     message.textContent = error.message;
   }
 });
-
-refreshAdmin.addEventListener("click", loadAdmin);
-
-async function loadAdmin() {
-  const response = await fetch("/api/rsvps");
-  const data = await response.json();
-
-  acceptCount.textContent = data.summary.accept;
-  declineCount.textContent = data.summary.decline;
-
-  if (!data.rsvps.length) {
-    responseList.innerHTML = "<p>No replies yet.</p>";
-    return;
-  }
-
-  responseList.innerHTML = data.rsvps
-    .slice()
-    .reverse()
-    .map((item) => {
-      const status = item.attendance === "accept" ? "Coming" : "Not coming";
-      const note = item.note ? `<p class="note">${escapeHtml(item.note)}</p>` : "";
-      return `
-        <article>
-          <div>
-            <h3>${escapeHtml(item.name)}</h3>
-            <p>${escapeHtml(item.email)}</p>
-          </div>
-          <p class="status">${status}</p>
-          ${note}
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (character) => {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[character];
-  });
-}
-
-loadAdmin();
