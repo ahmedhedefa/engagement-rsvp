@@ -7,15 +7,17 @@
   --ink-soft: #6f5e3f;
   --line: rgba(169, 134, 66, 0.42);
   --shadow: 0 28px 80px rgba(95, 73, 37, 0.24);
+
+  /* Animation timing - tweak these to taste */
+  --t-flap: 700ms;          /* closed-envelope -> open-envelope crossfade */
+  --t-card-rise: 1200ms;    /* card slides up out of pocket (still tilted) */
+  --t-card-flourish: 1100ms;/* card rotates upright + scales up */
+  --ease-paper: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-flourish: cubic-bezier(0.18, 0.86, 0.34, 1.08);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-[hidden] {
-  display: none !important;
-}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -26,16 +28,24 @@ body {
   font-family: "Cormorant Garamond", Georgia, serif;
 }
 
-button,
-input,
-textarea {
-  font: inherit;
-}
+button, input, textarea { font: inherit; }
 
 .page-shell {
   min-height: 100vh;
   overflow: hidden;
 }
+
+/* ============================================================
+   ENVELOPE REVEAL SCENE
+   Layer stack (bottom -> top):
+     z=1  .layer-closed    (sealed envelope image)
+     z=1  .layer-open      (opened envelope image, fades in over closed)
+     z=2  .card-stage      (the invitation card, slides up)
+     z=3  .layer-front     (pocket-only PNG mask, hides card bottom)
+     z=5  .open-trigger    (click target, fades out after click)
+   When the card has fully revealed (data-state=revealed), card-stage
+   gets z=10 so it sits ON TOP of everything (focal point).
+   ============================================================ */
 
 .invite-stage {
   min-height: 100vh;
@@ -45,128 +55,181 @@ textarea {
   padding: 4vh 1rem 6rem;
 }
 
-.envelope-scene {
-  width: min(86vw, 720px);
-  height: min(112vw, 850px);
-  max-height: 86vh;
+.reveal-scene {
   position: relative;
-  display: grid;
-  place-items: center;
-  perspective: 1800px;
+  width: min(92vw, 620px);
+  /* Aspect ratio matches the source PNG canvas (1122 x 1402 = ~0.80) */
+  aspect-ratio: 1122 / 1402;
+  perspective: 2000px;
+  perspective-origin: 50% 30%;
 }
 
-.envelope-button {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  background: transparent;
-  position: relative;
-  z-index: 5;
-  display: grid;
-  place-items: center;
-  transition: transform 600ms ease, opacity 650ms ease;
-}
-
-.closed-envelope {
-  display: block;
-  position: relative;
-  width: min(92vw, 560px);
-  aspect-ratio: 1.42;
-  background:
-    linear-gradient(145deg, transparent 49.6%, rgba(169, 134, 66, 0.26) 50%, transparent 50.4%),
-    linear-gradient(215deg, transparent 49.6%, rgba(169, 134, 66, 0.22) 50%, transparent 50.4%),
-    linear-gradient(180deg, #fffdf7 0%, #f3e7d4 100%);
-  border: 1px solid rgba(169, 134, 66, 0.36);
-  border-radius: 4px;
-  box-shadow: var(--shadow);
-  filter: drop-shadow(0 24px 34px rgba(82, 63, 29, 0.22));
-  overflow: hidden;
-}
-
-.envelope-flap {
-  position: absolute;
-  inset: 0 0 42%;
-  background: linear-gradient(135deg, #f7efe1 0%, #fffdf7 54%, #e9d8bd 100%);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  border-bottom: 1px solid rgba(169, 134, 66, 0.32);
-}
-
-.invite-label {
-  position: absolute;
-  inset: auto 0 18% 0;
-  margin: auto;
-  width: max-content;
-  max-width: 68%;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: clamp(0.78rem, 2vw, 1.08rem);
-  line-height: 1;
-  padding: 0.9rem 1.2rem;
-  background: rgba(255, 253, 247, 0.78);
-  border: 1px solid rgba(169, 134, 66, 0.3);
-  backdrop-filter: blur(3px);
-}
-
-.opened-invite {
+/* All image layers fill the scene at native canvas size.
+   Because all source PNGs use the same 1122x1402 canvas, their
+   envelope features line up automatically when stacked. */
+.layer {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  opacity: 0;
-  transform: translateY(4rem) scale(0.86);
-  transition: opacity 800ms ease 300ms, transform 900ms cubic-bezier(.18,.86,.34,1.08) 300ms;
-  pointer-events: none;
-}
-
-.paper-card,
-.rsvp-art {
-  border: 1px solid rgba(169, 134, 66, 0.32);
-  background:
-    linear-gradient(90deg, rgba(169, 134, 66, 0.14) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
-    linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(251, 248, 240, 0.96));
-}
-
-.paper-card {
-  width: min(88vw, 620px);
-  min-height: min(82vh, 780px);
-  padding: clamp(1rem, 3vw, 1.5rem);
-  box-shadow: var(--shadow);
-  text-align: center;
-  transform: rotateX(7deg);
-  display: grid;
-  align-content: center;
-  color: var(--gold);
-}
-
-.image-card {
-  background: var(--ivory);
-}
-
-.image-card img {
-  display: block;
   width: 100%;
-  max-height: 78vh;
+  height: 100%;
   object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 30px 40px rgba(82, 63, 29, 0.22));
 }
 
-.envelope-scene.is-open .envelope-button {
+.layer-closed { z-index: 1; opacity: 1;  transition: opacity var(--t-flap) var(--ease-paper); }
+.layer-open   { z-index: 1; opacity: 0;  transition: opacity var(--t-flap) var(--ease-paper); }
+.layer-front  { z-index: 3; opacity: 1;  /* always visible until card scales up */ }
+
+/* Soft ambient glow */
+.stage-glow {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    rgba(255, 240, 210, 0.55) 0%,
+    rgba(255, 240, 210, 0) 60%
+  );
+  opacity: 0.4;
+  transition: opacity 1200ms ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ----- The card ----- */
+
+.card-stage {
+  position: absolute;
+  /* Card is centered on the pocket: the pocket opening is at ~34% from the
+     top of the canvas, and the pocket bottom is at ~77%. The card sits
+     inside that band initially. */
+  left: 50%;
+  top: 56%;
+  z-index: 2;
+  /* Pivot from near the bottom so it appears to rotate while still tucked. */
+  transform-origin: 50% 75%;
+  /* Initial: tilted sideways (-90deg), small, centered on the pocket. */
+  transform: translate(-50%, -50%) rotate(-90deg) scale(0.5);
   opacity: 0;
-  transform: translateY(9rem) rotateX(68deg) scale(0.72);
+  pointer-events: none;
+  transition:
+    transform var(--t-card-rise) var(--ease-paper),
+    opacity 350ms ease;
+  /* Soft paper shadow under the card */
+  filter: drop-shadow(0 8px 14px rgba(82, 63, 29, 0.22));
+}
+
+.invitation-card {
+  display: block;
+  /* Sized so its width approximately matches the inside of the pocket
+     when rotated -90deg (the card's "height" becomes width-on-screen). */
+  width: 64%;
+  height: auto;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 3px rgba(82, 63, 29, 0.18),
+    0 18px 38px rgba(82, 63, 29, 0.22);
+  user-select: none;
   pointer-events: none;
 }
 
-.envelope-scene.is-open .opened-invite {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
+/* ===== STATE: closed (default) ===== */
+/* Everything is as defined above. */
+
+/* ===== STATE: opening =====
+   Flap opens (closed fades out, open fades in),
+   then card rises up out of the pocket while still rotated -90deg. */
+
+.reveal-scene[data-state="opening"] .layer-closed,
+.reveal-scene[data-state="revealed"] .layer-closed {
+  opacity: 0;
 }
+
+.reveal-scene[data-state="opening"] .layer-open,
+.reveal-scene[data-state="revealed"] .layer-open {
+  opacity: 1;
+}
+
+.reveal-scene[data-state="opening"] .card-stage {
+  opacity: 1;
+  /* Translate up so the card emerges above the pocket opening (~34%).
+     It is still sideways. The front pocket layer still clips the bottom. */
+  transform: translate(-50%, -130%) rotate(-90deg) scale(0.62);
+  transition:
+    transform var(--t-card-rise) var(--ease-paper) 350ms,
+    opacity 350ms ease 350ms;
+}
+
+/* ===== STATE: revealed =====
+   Card rotates upright (-90deg -> 0deg), scales up to focal size,
+   and rises clear of the pocket so the front layer no longer clips it.
+   The envelope recedes. */
+
+.reveal-scene[data-state="revealed"] .card-stage {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
+  transition:
+    transform var(--t-card-flourish) var(--ease-flourish),
+    opacity 400ms ease;
+  z-index: 10; /* lift above the front pocket layer */
+}
+
+.reveal-scene[data-state="revealed"] .layer-open,
+.reveal-scene[data-state="revealed"] .layer-front {
+  opacity: 0.18;
+  transform: scale(0.78) translateY(8%);
+  transition: opacity 900ms ease 250ms, transform 900ms var(--ease-paper) 250ms;
+}
+
+.reveal-scene[data-state="revealed"] .stage-glow {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* ----- Click trigger ----- */
+
+.open-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 8%;
+  transition: opacity 400ms ease;
+}
+
+.trigger-hint {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.78rem;
+  padding: 0.7rem 1.2rem;
+  background: rgba(255, 253, 247, 0.78);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(3px);
+  animation: hint-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.75; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(-3px); }
+}
+
+.reveal-scene[data-state="opening"] .open-trigger,
+.reveal-scene[data-state="revealed"] .open-trigger {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ----- Scroll cue ----- */
 
 .scroll-cue {
   position: absolute;
-  bottom: 2.2rem;
+  bottom: 1.8rem;
   left: 50%;
   transform: translateX(-50%);
   color: var(--gold);
@@ -175,10 +238,32 @@ textarea {
   font-size: 0.78rem;
   opacity: 0;
   transition: opacity 600ms ease;
+  animation: cue-bob 2.4s ease-in-out infinite;
 }
 
-.scroll-cue.is-visible {
-  opacity: 1;
+.scroll-cue.is-visible { opacity: 1; }
+
+@keyframes cue-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, 6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer, .card-stage, .stage-glow {
+    transition-duration: 200ms !important;
+  }
+  .trigger-hint, .scroll-cue { animation: none; }
+}
+
+/* ============================================================
+   RSVP SECTION (unchanged from previous)
+   ============================================================ */
+
+.rsvp-art {
+  border: 1px solid rgba(169, 134, 66, 0.32);
+  background:
+    linear-gradient(90deg, rgba(169, 134, 66, 0.14) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
+    linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(251, 248, 240, 0.96));
 }
 
 .rsvp-section {
@@ -195,9 +280,7 @@ textarea {
   color: var(--gold);
 }
 
-.reply-by,
-form label span,
-legend {
+.reply-by, form label span, legend {
   display: block;
   text-transform: uppercase;
   letter-spacing: 0.26em;
@@ -205,13 +288,9 @@ legend {
   color: #bc8e46;
 }
 
-.reply-by {
-  text-align: center;
-  margin-bottom: 0.7rem;
-}
+.reply-by { text-align: center; margin-bottom: 0.7rem; }
 
-.rsvp-art h2,
-.admin-header h2 {
+.rsvp-art h2, .admin-header h2 {
   margin: 0;
   font-family: "Great Vibes", cursive;
   font-weight: 400;
@@ -232,24 +311,12 @@ legend {
   margin: 1.2rem 0 2.4rem;
 }
 
-.divider span {
-  width: 4.4rem;
-  height: 1px;
-  background: var(--line);
-}
+.divider span { width: 4.4rem; height: 1px; background: var(--line); }
+.divider b { font-size: 0.8rem; color: #bf8736; }
 
-.divider b {
-  font-size: 0.8rem;
-  color: #bf8736;
-}
+form { display: grid; gap: 1.65rem; }
 
-form {
-  display: grid;
-  gap: 1.65rem;
-}
-
-input,
-textarea {
+input, textarea {
   width: 100%;
   border: 0;
   border-bottom: 1px solid var(--line);
@@ -259,22 +326,14 @@ textarea {
   outline: none;
 }
 
-textarea {
-  min-height: 6rem;
-  resize: vertical;
-}
+textarea { min-height: 6rem; resize: vertical; }
 
-input::placeholder,
-textarea::placeholder {
+input::placeholder, textarea::placeholder {
   color: rgba(121, 103, 74, 0.48);
   font-style: italic;
 }
 
-fieldset {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
+fieldset { border: 0; margin: 0; padding: 0; }
 
 .option-grid {
   display: grid;
@@ -283,9 +342,7 @@ fieldset {
   margin-top: 0.9rem;
 }
 
-.option-grid label {
-  min-height: 3.5rem;
-}
+.option-grid label { min-height: 3.5rem; position: relative; }
 
 .option-grid input {
   position: absolute;
@@ -309,8 +366,7 @@ fieldset {
   border-color: #b9883c;
 }
 
-.send-button,
-.admin-header button {
+.send-button, .admin-header button {
   justify-self: center;
   min-width: min(100%, 420px);
   border: 1px solid #b9883c;
@@ -323,8 +379,7 @@ fieldset {
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.send-button:hover,
-.admin-header button:hover {
+.send-button:hover, .admin-header button:hover {
   background: #b9883c;
   color: var(--ivory);
   transform: translateY(-1px);
@@ -337,10 +392,11 @@ fieldset {
   color: var(--deep-gold);
 }
 
-.admin-page {
-  min-height: 100vh;
-  padding: 4rem 1rem;
-}
+/* ============================================================
+   ADMIN
+   ============================================================ */
+
+.admin-page { min-height: 100vh; padding: 4rem 1rem; }
 
 .admin-section {
   width: min(100% - 2rem, 920px);
@@ -358,10 +414,7 @@ fieldset {
   padding-top: 2rem;
 }
 
-.admin-header p,
-.admin-header h2 {
-  margin: 0;
-}
+.admin-header p, .admin-header h2 { margin: 0; }
 
 .admin-header p {
   text-transform: uppercase;
@@ -380,10 +433,7 @@ fieldset {
   letter-spacing: 0.2em;
 }
 
-.admin-login {
-  margin: 2rem 0;
-  max-width: 32rem;
-}
+.admin-login { margin: 2rem 0; max-width: 32rem; }
 
 .stats {
   display: grid;
@@ -392,8 +442,7 @@ fieldset {
   margin: 1.5rem 0;
 }
 
-.stats div,
-.response-list article {
+.stats div, .response-list article {
   border: 1px solid rgba(169, 134, 66, 0.28);
   background: rgba(255, 253, 247, 0.56);
   padding: 1rem;
@@ -412,10 +461,7 @@ fieldset {
   color: var(--gold);
 }
 
-.response-list {
-  display: grid;
-  gap: 0.8rem;
-}
+.response-list { display: grid; gap: 0.8rem; }
 
 .response-list article {
   display: grid;
@@ -423,14 +469,8 @@ fieldset {
   gap: 0.6rem 1rem;
 }
 
-.response-list h3,
-.response-list p {
-  margin: 0;
-}
-
-.response-list h3 {
-  color: #6a583b;
-}
+.response-list h3, .response-list p { margin: 0; }
+.response-list h3 { color: #6a583b; }
 
 .response-list .status {
   text-transform: uppercase;
@@ -445,38 +485,9 @@ fieldset {
 }
 
 @media (max-width: 680px) {
-  .invite-stage {
-    min-height: 88vh;
-  }
-
-  .envelope-scene {
-    width: 96vw;
-    height: 122vw;
-  }
-
-  .closed-envelope {
-    width: min(88vw, 460px);
-  }
-
-  .paper-card {
-    min-height: auto;
-  }
-
-  .option-grid,
-  .stats {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-header {
-    display: grid;
-    align-items: start;
-  }
-
-  .admin-header button {
-    justify-self: start;
-  }
-
-  .response-list article {
-    grid-template-columns: 1fr;
-  }
+  .reveal-scene { width: 96vw; }
+  .option-grid, .stats { grid-template-columns: 1fr; }
+  .admin-header { display: grid; align-items: start; }
+  .admin-header button { justify-self: start; }
+  .response-list article { grid-template-columns: 1fr; }
 }

@@ -1,4 +1,4 @@
-const envelopeScene = document.getElementById("envelopeScene");
+const revealScene = document.getElementById("revealScene");
 const openInvite = document.getElementById("openInvite");
 const scrollCue = document.getElementById("scrollCue");
 const form = document.getElementById("rsvpForm");
@@ -7,13 +7,51 @@ const plusOneYes = document.getElementById("plusOneYes");
 const plusOneNo = document.getElementById("plusOneNo");
 const plusOneDetails = document.getElementById("plusOneDetails");
 
+// ====================================================================
+// Envelope reveal sequence
+// State machine: closed -> opening -> revealed
+//   closed   : sealed envelope, "tap to open" hint pulsing
+//   opening  : flap opens (closed image fades to open image),
+//              card slides up out of pocket (still tilted -90deg)
+//   revealed : card rotates upright + scales to focal point,
+//              envelope & front pocket fade back
+// ====================================================================
+
+// These should match the timing of the CSS transitions on .card-stage
+// (rise duration + delay), and the flourish duration.
+const PHASE_OPENING_MS = 1600; // wait for card to finish rising
+const PHASE_REVEALED_MS = 1300; // wait for card to finish rotating/scaling
+
+let hasOpened = false;
+
 openInvite.addEventListener("click", () => {
-  envelopeScene.classList.add("is-open");
-  scrollCue.classList.add("is-visible");
+  if (hasOpened) return;
+  hasOpened = true;
+
+  // Phase 1: flap opens, card begins to rise (still sideways)
+  revealScene.dataset.state = "opening";
+
+  // Phase 2: card rotates upright and scales up to focal point
   setTimeout(() => {
-    document.getElementById("rsvp").scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 1450);
+    revealScene.dataset.state = "revealed";
+  }, PHASE_OPENING_MS);
+
+  // After full reveal: show scroll cue + gently scroll to RSVP
+  setTimeout(() => {
+    scrollCue.classList.add("is-visible");
+  }, PHASE_OPENING_MS + PHASE_REVEALED_MS);
+
+  setTimeout(() => {
+    document.getElementById("rsvp").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 1400);
 });
+
+// ====================================================================
+// RSVP form
+// ====================================================================
 
 function updatePlusOneDetails() {
   const isVisible = plusOneYes.checked;
