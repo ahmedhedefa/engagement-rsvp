@@ -21,7 +21,7 @@
      ------------------------------------------------------------- */
   --env-aspect: 840 / 600;   /* <-- replace with your image's W / H */
   --flap-hinge: 5%;      /* <-- replace with your flap's fold % */
-  --flap-lift: -4%;      /* <-- nudge flap up/down (negative = up) */
+  --flap-lift: -5%;      /* <-- nudge flap up/down (negative = up) */
 
   /* --- Animation timing (tweak freely) ------------------------- */
   --t-flap: 1100ms;          /* flap hinge swinging open */
