@@ -31,9 +31,9 @@
   --card-revealed-y: -15%;
   --card-top: 6%;
   --card-height: 56%;
-  --card-start-scale: 2.5;
-  --card-opening-scale: 2.7;
-  --card-revealed-scale: 2.9;
+  --card-start-scale: 2.2;
+  --card-opening-scale: 2.4;
+  --card-revealed-scale: 3.5;
 
   --ease-paper: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-flourish: cubic-bezier(0.18, 0.86, 0.34, 1.08);
@@ -710,9 +710,9 @@ fieldset {
     --card-revealed-y: -48%;
     --card-top: 8%;
     --card-height: 50%;
-    --card-start-scale: 0.48;
-    --card-opening-scale: 0.54;
-    --card-revealed-scale: 0.9;
+    --card-start-scale: 1.5;
+    --card-opening-scale: 1.7;
+    --card-revealed-scale: 2.5;
   }
 
   .invite-stage {
@@ -765,9 +765,9 @@ fieldset {
     --card-top: 14%;
 
     --card-height: 68%;
-    --card-start-scale: 1;
-    --card-opening-scale: 1;
-    --card-revealed-scale: 1;
+    --card-start-scale: 1.5;
+    --card-opening-scale: 1.7;
+    --card-revealed-scale: 2.5;
   }
 
   .invite-stage {
