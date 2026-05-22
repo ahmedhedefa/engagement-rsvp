@@ -121,17 +121,17 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- The invitation card ----- */
+/* ----- The invitation card -----
+   The WRAPPER handles only vertical position (translateY) — never
+   rotation — so its translate is always in un-rotated screen space
+   and stays purely vertical. The ROTATION + SCALE live on the inner
+   .envelope__card. Keeping them on separate elements means the
+   translate and rotate can't interact, so no sideways drift. */
 .envelope__card-wrapper {
   display: grid;
   place-items: start center;
-  /* Centered origin: a translateY is then purely vertical and the
-     rotate spins in place. An off-center origin (e.g. 50% 78%)
-     cross-couples them — moving up while rotated also drifts the
-     card sideways, producing a diagonal path. */
-  transform-origin: 50% 50%;
-  /* Initial: tucked low inside the pocket, tilted sideways, small */
-  transform: translateY(8%) rotate(-90deg) scale(0.5);
+  /* Initial: tucked low inside the pocket. Pure vertical offset. */
+  transform: translateY(8%);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -157,6 +157,12 @@ button, input, textarea { font: inherit; }
   image-rendering: auto;
   user-select: none;
   pointer-events: none;
+  /* Rotation + scale live HERE, not on the wrapper. Initial state:
+     rotated sideways, small. The wrapper handles vertical position
+     separately, so these never interact with the rise. */
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg) scale(0.5);
+  transition: transform var(--t-card-flourish) var(--ease-flourish);
 }
 
 /* ----- The flap: a true 3D hinge -----
@@ -278,8 +284,9 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="opening"] .envelope__card-wrapper {
   opacity: 1;
-  /* Rise up out of the pocket, still sideways. */
-  transform: translateY(-58%) rotate(-90deg) scale(0.62);
+  /* Pure vertical rise out of the pocket — no rotation here, so the
+     path stays perfectly straight up with no sideways drift. */
+  transform: translateY(-58%);
   /* Open-state layering: card sits ABOVE the flap (dropped to z 3
      by the rule below) and BELOW the front panel (raised to z 5),
      so it emerges in front of the flap but the front pocket still
@@ -288,6 +295,12 @@ button, input, textarea { font: inherit; }
   transition:
     transform var(--t-card-rise) var(--ease-paper) 450ms,
     opacity 300ms ease 450ms;
+}
+
+/* The inner card stays rotated sideways while it rises. */
+.envelope[data-state="opening"] .envelope__card {
+  transform: rotate(-90deg) scale(0.62);
+  transition: transform var(--t-card-rise) var(--ease-paper) 450ms;
 }
 
 /* When the envelope opens, the flap drops BELOW the card, and the
@@ -315,14 +328,20 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="revealed"] .envelope__card-wrapper {
   opacity: 1;
-  /* Final focal size. The base card is now larger (height-sized),
-     so this scale stacks on top of that. Increase for bigger,
-     decrease for smaller — watch it doesn't overflow the stage. */
-  transform: translateY(-50%) rotate(0deg) scale(1.2);
+  /* Vertical position only — center the card in the stage. */
+  transform: translateY(-50%);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
   z-index: 10; /* lift above flap + front panel */
+}
+
+/* The inner card rotates upright and scales up to the focal size.
+   Increase the scale for bigger, decrease for smaller — watch it
+   doesn't overflow the stage. */
+.envelope[data-state="revealed"] .envelope__card {
+  transform: rotate(0deg) scale(1.2);
+  transition: transform var(--t-card-flourish) var(--ease-flourish);
 }
 
 .envelope[data-state="revealed"] .envelope__back,
