@@ -50,10 +50,12 @@ button, input, textarea { font: inherit; }
 
 .invite-stage {
   min-height: 100vh;
+  min-height: 100svh;
   display: grid;
   place-items: center;
   position: relative;
   padding: 4vh 1rem 6rem;
+  overflow: hidden;
 }
 
 .envelope {
@@ -661,9 +663,49 @@ fieldset {
   font-style: italic;
 }
 
-@media (max-width: 680px) {
+/* ============================================================
+   MOBILE RESPONSIVE FIXES
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .invite-stage {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 2rem 0.75rem 4rem;
+    overflow: hidden;
+  }
+
   .envelope {
-    width: 96vw;
+    width: min(96vw, 520px);
+  }
+
+  .trigger-hint {
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .envelope__card {
+    height: 52%;
+    margin-top: 7%;
+  }
+
+  .envelope[data-state="opening"] .envelope__card-wrapper {
+    transform: translateY(-78%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-45%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(1.02);
+  }
+
+  .scroll-cue {
+    bottom: 1rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
   }
 
   .option-grid,
@@ -682,5 +724,57 @@ fieldset {
 
   .response-list article {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .invite-stage {
+    padding: 1.5rem 0.5rem 3.5rem;
+  }
+
+  .envelope {
+    width: 98vw;
+  }
+
+  .envelope__card {
+    height: 49%;
+    margin-top: 8%;
+  }
+
+  .envelope[data-state="opening"] .envelope__card-wrapper {
+    transform: translateY(-76%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-42%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(0.92);
+  }
+
+  .trigger-hint {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    padding: 0.55rem 0.75rem;
+  }
+}
+
+@media (max-height: 720px) and (max-width: 480px) {
+  .invite-stage {
+    padding-top: 0.75rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .envelope {
+    width: 94vw;
+  }
+
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(0.82);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-38%);
   }
 }
