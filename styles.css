@@ -144,7 +144,7 @@ button, input, textarea { font: inherit; }
      width:auto keeps the source aspect ratio (no distortion).
      The browser scales the full-resolution source image; nothing
      here downsamples it. image-rendering keeps the scaling smooth. */
-  height: 92%;
+  height: 56%;
   width: auto;
   margin-top: 6%;
   border-radius: 2px;
