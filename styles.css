@@ -315,7 +315,7 @@ button, input, textarea { font: inherit; }
   /* Final focal size. The base card is now larger (height-sized),
      so this scale stacks on top of that. Increase for bigger,
      decrease for smaller — watch it doesn't overflow the stage. */
-  transform: translateY(-50%) rotate(0deg) scale(1.2);
+  transform: translateY(-50%) rotate(0deg) scale(1);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
