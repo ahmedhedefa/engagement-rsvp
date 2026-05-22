@@ -286,7 +286,7 @@ button, input, textarea { font: inherit; }
   opacity: 1;
   /* Pure vertical rise out of the pocket — no rotation here, so the
      path stays perfectly straight up with no sideways drift. */
-  transform: translateY(-58%);
+  transform: translateY(-80%);
   /* Open-state layering: card sits ABOVE the flap (dropped to z 3
      by the rule below) and BELOW the front panel (raised to z 5),
      so it emerges in front of the flap but the front pocket still
