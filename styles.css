@@ -125,8 +125,11 @@ button, input, textarea { font: inherit; }
 .envelope__card-wrapper {
   display: grid;
   place-items: start center;
-  /* Pivot near the bottom so rotation reads as emerging from pocket */
-  transform-origin: 50% 78%;
+  /* Centered origin: a translateY is then purely vertical and the
+     rotate spins in place. An off-center origin (e.g. 50% 78%)
+     cross-couples them — moving up while rotated also drifts the
+     card sideways, producing a diagonal path. */
+  transform-origin: 50% 50%;
   /* Initial: tucked low inside the pocket, tilted sideways, small */
   transform: translateY(8%) rotate(-90deg) scale(0.5);
   opacity: 0;
@@ -144,7 +147,7 @@ button, input, textarea { font: inherit; }
      width:auto keeps the source aspect ratio (no distortion).
      The browser scales the full-resolution source image; nothing
      here downsamples it. image-rendering keeps the scaling smooth. */
-  height: 56%;
+  height: 92%;
   width: auto;
   margin-top: 6%;
   border-radius: 2px;
@@ -219,7 +222,7 @@ button, input, textarea { font: inherit; }
    leave the art mirrored top-to-bottom, so scaleX(-1) flips it
    back to the correct orientation. */
 .flap-inside {
-  transform: rotateY(180deg) scaleX(-1);
+  transform: rotateX(180deg) scaleX(-1);
 }
 
 /* ----- Click trigger ----- */
@@ -315,7 +318,7 @@ button, input, textarea { font: inherit; }
   /* Final focal size. The base card is now larger (height-sized),
      so this scale stacks on top of that. Increase for bigger,
      decrease for smaller — watch it doesn't overflow the stage. */
-  transform: translateY(-50%) rotate(0deg) scale(1.2);
+  transform: translateY(-50%) rotate(0deg) scale(1.5);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
