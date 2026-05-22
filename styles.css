@@ -668,10 +668,14 @@ fieldset {
    ============================================================ */
 
 /*
-  Important:
-  The card size is NOT changed on mobile anymore.
-  It keeps the same proportions as desktop because the whole envelope
-  already scales with viewport width.
+  Phone fix:
+  The envelope keeps its normal responsive size, but the card gets
+  its own mobile start position and scale.
+
+  If the card still needs tiny tuning later, adjust only these values:
+  - closed state: .envelope__card-wrapper translateY(...)
+  - closed card size: .envelope__card height + scale(...)
+  - revealed card size: scale(...)
 */
 
 @media (max-width: 768px) {
@@ -684,6 +688,45 @@ fieldset {
 
   .envelope {
     width: min(96vw, 620px);
+  }
+
+  /*
+    CLOSED MOBILE CARD POSITION
+    Lower number magnitude = lower card.
+    This fixes the card starting too high / in the wrong place.
+  */
+  .envelope__card-wrapper {
+    transform: translateY(-36%);
+  }
+
+  /*
+    CLOSED MOBILE CARD SIZE
+    This fixes the card being too large while inside the envelope.
+  */
+  .envelope__card {
+    height: 42%;
+    margin-top: 16%;
+    transform: rotate(-90deg) scale(0.42);
+  }
+
+  .envelope[data-state="opening"] .envelope__card-wrapper {
+    transform: translateY(-66%);
+  }
+
+  .envelope[data-state="opening"] .envelope__card {
+    transform: rotate(-90deg) scale(0.48);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-38%);
+  }
+
+  /*
+    FINAL MOBILE CARD SIZE
+    Smaller than desktop so it does not take over the phone screen.
+  */
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(0.82);
   }
 
   .trigger-hint {
@@ -719,11 +762,41 @@ fieldset {
 
 @media (max-width: 480px) {
   .invite-stage {
-    padding: 1.5rem 0.5rem 3.5rem;
+    padding: 1.25rem 0.5rem 3.25rem;
   }
 
   .envelope {
     width: 98vw;
+  }
+
+  /*
+    Extra small phone adjustment:
+    push the tucked card slightly lower and keep it smaller.
+  */
+  .envelope__card-wrapper {
+    transform: translateY(-30%);
+  }
+
+  .envelope__card {
+    height: 38%;
+    margin-top: 19%;
+    transform: rotate(-90deg) scale(0.38);
+  }
+
+  .envelope[data-state="opening"] .envelope__card-wrapper {
+    transform: translateY(-60%);
+  }
+
+  .envelope[data-state="opening"] .envelope__card {
+    transform: rotate(-90deg) scale(0.44);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-34%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(0.72);
   }
 
   .trigger-hint {
@@ -733,8 +806,6 @@ fieldset {
   }
 }
 
-/* For very short phone screens, shrink the whole envelope slightly,
-   not the card by itself. This keeps the card/folder proportions correct. */
 @media (max-height: 720px) and (max-width: 480px) {
   .invite-stage {
     padding-top: 0.75rem;
@@ -743,6 +814,32 @@ fieldset {
 
   .envelope {
     width: 94vw;
+  }
+
+  .envelope__card-wrapper {
+    transform: translateY(-26%);
+  }
+
+  .envelope__card {
+    height: 36%;
+    margin-top: 20%;
+    transform: rotate(-90deg) scale(0.36);
+  }
+
+  .envelope[data-state="opening"] .envelope__card-wrapper {
+    transform: translateY(-56%);
+  }
+
+  .envelope[data-state="opening"] .envelope__card {
+    transform: rotate(-90deg) scale(0.42);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card-wrapper {
+    transform: translateY(-30%);
+  }
+
+  .envelope[data-state="revealed"] .envelope__card {
+    transform: rotate(0deg) scale(0.66);
   }
 }
 
