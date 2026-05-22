@@ -9,18 +9,19 @@ const plusOneDetails = document.getElementById("plusOneDetails");
 
 // ====================================================================
 // Envelope reveal sequence
-// State machine: closed -> opening -> revealed
-//   closed   : sealed envelope, "tap to open" hint pulsing
-//   opening  : flap opens (closed image fades to open image),
-//              card slides up out of pocket (still tilted -90deg)
-//   revealed : card rotates upright + scales to focal point,
-//              envelope & front pocket fade back
+// State machine: closed -> flap-opening -> opening -> revealed
+//   closed       : sealed envelope, "tap to open" hint pulsing
+//   flap-opening : flap just barely lifted (intermediate frame, ~350ms)
+//   opening      : flap fully open, card slides up out of pocket
+//                  (still rotated -90deg / sideways)
+//   revealed     : card rotates upright + scales to focal point,
+//                  envelope & front pocket fade back
 // ====================================================================
 
-// These should match the timing of the CSS transitions on .card-stage
-// (rise duration + delay), and the flourish duration.
-const PHASE_OPENING_MS = 1600; // wait for card to finish rising
-const PHASE_REVEALED_MS = 1300; // wait for card to finish rotating/scaling
+// Phase durations - keep in sync with CSS transitions on the layers.
+const PHASE_FLAP_LIFT_MS = 400;  // closed -> slightly-open crossfade
+const PHASE_OPENING_MS = 1600;   // slightly-open -> open + card rise
+const PHASE_REVEALED_MS = 1300;  // card rotates upright + scales up
 
 let hasOpened = false;
 
@@ -28,25 +29,30 @@ openInvite.addEventListener("click", () => {
   if (hasOpened) return;
   hasOpened = true;
 
-  // Phase 1: flap opens, card begins to rise (still sideways)
-  revealScene.dataset.state = "opening";
+  // Phase 1: flap just barely lifts (closed -> slightly-open)
+  revealScene.dataset.state = "flap-opening";
 
-  // Phase 2: card rotates upright and scales up to focal point
+  // Phase 2: flap fully opens + card begins to rise (still sideways)
+  setTimeout(() => {
+    revealScene.dataset.state = "opening";
+  }, PHASE_FLAP_LIFT_MS);
+
+  // Phase 3: card rotates upright and scales up to focal point
   setTimeout(() => {
     revealScene.dataset.state = "revealed";
-  }, PHASE_OPENING_MS);
+  }, PHASE_FLAP_LIFT_MS + PHASE_OPENING_MS);
 
   // After full reveal: show scroll cue + gently scroll to RSVP
   setTimeout(() => {
     scrollCue.classList.add("is-visible");
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS);
+  }, PHASE_FLAP_LIFT_MS + PHASE_OPENING_MS + PHASE_REVEALED_MS);
 
   setTimeout(() => {
     document.getElementById("rsvp").scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 1400);
+  }, PHASE_FLAP_LIFT_MS + PHASE_OPENING_MS + PHASE_REVEALED_MS + 1400);
 });
 
 // ====================================================================

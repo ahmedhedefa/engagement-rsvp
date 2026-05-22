@@ -23,23 +23,32 @@
 
           <!-- LAYER 1 (back): sealed envelope. Visible at start. -->
           <img
-            src="/envelope-closed.webp"
+            src="/envelope-closed.png"
             alt=""
             class="layer layer-closed"
             aria-hidden="true"
             draggable="false"
           />
 
-          <!-- LAYER 2 (back, replaces closed): envelope with flap open & pocket visible. -->
+          <!-- LAYER 2 (back, intermediate): envelope with flap just barely lifted. -->
           <img
-            src="/envelope-open.webp"
+            src="/envelope-slightly-open.png"
+            alt=""
+            class="layer layer-slightly-open"
+            aria-hidden="true"
+            draggable="false"
+          />
+
+          <!-- LAYER 3 (back, final state): envelope wide open with pocket visible. -->
+          <img
+            src="/envelope-open.png"
             alt=""
             class="layer layer-open"
             aria-hidden="true"
             draggable="false"
           />
 
-          <!-- LAYER 3 (middle): the invitation card. Slides up from behind. -->
+          <!-- LAYER 4 (middle): the invitation card. Slides up from behind. -->
           <div class="card-stage" aria-hidden="true">
             <img
               src="/invitation_7pm.png"
@@ -49,9 +58,9 @@
             />
           </div>
 
-          <!-- LAYER 4 (front mask): the pocket. Hides bottom of card so it looks tucked in. -->
+          <!-- LAYER 5 (front mask): the pocket. Hides bottom of card so it looks tucked in. -->
           <img
-            src="/front-layer.webp"
+            src="/front-layer.png"
             alt=""
             class="layer layer-front"
             aria-hidden="true"

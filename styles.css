@@ -38,11 +38,16 @@ button, input, textarea { font: inherit; }
 /* ============================================================
    ENVELOPE REVEAL SCENE
    Layer stack (bottom -> top):
-     z=1  .layer-closed    (sealed envelope image)
-     z=1  .layer-open      (opened envelope image, fades in over closed)
-     z=2  .card-stage      (the invitation card, slides up)
-     z=3  .layer-front     (pocket-only PNG mask, hides card bottom)
-     z=5  .open-trigger    (click target, fades out after click)
+     z=1  .layer-closed         (sealed envelope image)
+     z=1  .layer-slightly-open  (flap just barely lifted, intermediate)
+     z=1  .layer-open           (envelope wide open, pocket visible)
+     z=2  .card-stage           (the invitation card, slides up)
+     z=3  .layer-front          (pocket-only PNG mask, hides card bottom)
+     z=5  .open-trigger         (click target, fades out after click)
+   Flap-opening sequence:
+     closed -> flap-opening -> opening -> revealed
+     The three envelope images crossfade in sequence to give the flap
+     a real two-step lift motion (sealed -> half -> full).
    When the card has fully revealed (data-state=revealed), card-stage
    gets z=10 so it sits ON TOP of everything (focal point).
    ============================================================ */
@@ -78,9 +83,10 @@ button, input, textarea { font: inherit; }
   filter: drop-shadow(0 30px 40px rgba(82, 63, 29, 0.22));
 }
 
-.layer-closed { z-index: 1; opacity: 1;  transition: opacity var(--t-flap) var(--ease-paper); }
-.layer-open   { z-index: 1; opacity: 0;  transition: opacity var(--t-flap) var(--ease-paper); }
-.layer-front  { z-index: 3; opacity: 1;  /* always visible until card scales up */ }
+.layer-closed         { z-index: 1; opacity: 1;  transition: opacity 350ms var(--ease-paper); }
+.layer-slightly-open  { z-index: 1; opacity: 0;  transition: opacity 350ms var(--ease-paper); }
+.layer-open           { z-index: 1; opacity: 0;  transition: opacity 350ms var(--ease-paper); }
+.layer-front          { z-index: 3; opacity: 1;  /* always visible until card scales up */ }
 
 /* Soft ambient glow */
 .stage-glow {
@@ -135,14 +141,31 @@ button, input, textarea { font: inherit; }
 }
 
 /* ===== STATE: closed (default) ===== */
-/* Everything is as defined above. */
+/* Everything is as defined above. layer-closed visible. */
+
+/* ===== STATE: flap-opening =====
+   Closed envelope crossfades to slightly-open (flap just lifted).
+   Brief intermediate frame for natural flap motion. */
+
+.reveal-scene[data-state="flap-opening"] .layer-closed {
+  opacity: 0;
+}
+
+.reveal-scene[data-state="flap-opening"] .layer-slightly-open {
+  opacity: 1;
+}
 
 /* ===== STATE: opening =====
-   Flap opens (closed fades out, open fades in),
+   Slightly-open crossfades to fully-open (flap all the way up),
    then card rises up out of the pocket while still rotated -90deg. */
 
 .reveal-scene[data-state="opening"] .layer-closed,
 .reveal-scene[data-state="revealed"] .layer-closed {
+  opacity: 0;
+}
+
+.reveal-scene[data-state="opening"] .layer-slightly-open,
+.reveal-scene[data-state="revealed"] .layer-slightly-open {
   opacity: 0;
 }
 
@@ -219,6 +242,7 @@ button, input, textarea { font: inherit; }
   50%      { opacity: 1;    transform: translateY(-3px); }
 }
 
+.reveal-scene[data-state="flap-opening"] .open-trigger,
 .reveal-scene[data-state="opening"] .open-trigger,
 .reveal-scene[data-state="revealed"] .open-trigger {
   opacity: 0;
