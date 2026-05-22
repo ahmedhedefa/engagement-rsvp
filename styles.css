@@ -667,6 +667,13 @@ fieldset {
    MOBILE RESPONSIVE FIXES
    ============================================================ */
 
+/*
+  Important:
+  The card size is NOT changed on mobile anymore.
+  It keeps the same proportions as desktop because the whole envelope
+  already scales with viewport width.
+*/
+
 @media (max-width: 768px) {
   .invite-stage {
     min-height: 100vh;
@@ -676,30 +683,13 @@ fieldset {
   }
 
   .envelope {
-    width: min(96vw, 520px);
+    width: min(96vw, 620px);
   }
 
   .trigger-hint {
     font-size: 0.68rem;
     letter-spacing: 0.22em;
     padding: 0.6rem 0.9rem;
-  }
-
-  .envelope__card {
-    height: 52%;
-    margin-top: 7%;
-  }
-
-  .envelope[data-state="opening"] .envelope__card-wrapper {
-    transform: translateY(-78%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-45%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(1.02);
   }
 
   .scroll-cue {
@@ -736,23 +726,6 @@ fieldset {
     width: 98vw;
   }
 
-  .envelope__card {
-    height: 49%;
-    margin-top: 8%;
-  }
-
-  .envelope[data-state="opening"] .envelope__card-wrapper {
-    transform: translateY(-76%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-42%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(0.92);
-  }
-
   .trigger-hint {
     font-size: 0.62rem;
     letter-spacing: 0.16em;
@@ -760,6 +733,8 @@ fieldset {
   }
 }
 
+/* For very short phone screens, shrink the whole envelope slightly,
+   not the card by itself. This keeps the card/folder proportions correct. */
 @media (max-height: 720px) and (max-width: 480px) {
   .invite-stage {
     padding-top: 0.75rem;
@@ -769,12 +744,5 @@ fieldset {
   .envelope {
     width: 94vw;
   }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(0.82);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-38%);
-  }
 }
+
