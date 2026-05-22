@@ -8,25 +8,13 @@
   --line: rgba(169, 134, 66, 0.42);
   --shadow: 0 28px 80px rgba(95, 73, 37, 0.24);
 
-  /* --- Envelope geometry — SET THESE TWO FOR YOUR IMAGES --------
-     --env-aspect: your envelope image's width / height
-       (e.g. an 840x600 image -> 840 / 600).
-     --flap-hinge: where the flap's fold line sits, as a % down from
-       the top of the canvas — the hinge axis for the 3D rotateX.
-       Flap fold at the very top edge of the image -> 0%.
-       Flap fold a third of the way down           -> 33%.
-     --flap-lift: vertical nudge for the flap's position. Negative
-       values move it up. Applied in both closed and open states so
-       the flap does not jump when the animation starts.
-     ------------------------------------------------------------- */
-  --env-aspect: 840 / 600;   /* <-- replace with your image's W / H */
-  --flap-hinge: 5%;      /* <-- replace with your flap's fold % */
-  --flap-lift: -5%;      /* <-- nudge flap up/down (negative = up) */
+  --env-aspect: 840 / 600;
+  --flap-hinge: 5%;
+  --flap-lift: -5%;
 
-  /* --- Animation timing (tweak freely) ------------------------- */
-  --t-flap: 1100ms;          /* flap hinge swinging open */
-  --t-card-rise: 1150ms;     /* card sliding up out of pocket */
-  --t-card-flourish: 1050ms; /* card rotating upright + scaling */
+  --t-flap: 1100ms;
+  --t-card-rise: 1150ms;
+  --t-card-flourish: 1050ms;
   --ease-paper: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-flourish: cubic-bezier(0.18, 0.86, 0.34, 1.08);
 }
@@ -51,7 +39,7 @@ button, input, textarea { font: inherit; }
 }
 
 /* ============================================================
-   ENVELOPE — layered reveal, structured like the Webflow template
+   ENVELOPE
    ============================================================ */
 
 .invite-stage {
@@ -66,13 +54,10 @@ button, input, textarea { font: inherit; }
   position: relative;
   width: min(92vw, 620px);
   aspect-ratio: var(--env-aspect);
-  /* 3D context so the flap can hinge convincingly */
   perspective: 1600px;
   perspective-origin: 50% 28%;
 }
 
-/* All full-canvas layers fill the scene identically. Because the
-   envelope images share one canvas size, their features align. */
 .envelope__back,
 .envelope__front,
 .envelope__flap-shadow,
@@ -91,14 +76,6 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- z-order (bottom -> top) — CLOSED-STATE base -----
-   Closed stack: back -> card -> flap-shadow -> front -> flap
-   While sealed: the flap is the TOP layer (it's the last fold of a
-   real envelope), the front panel is under it, and the card is
-   hidden at the bottom inside the envelope.
-   When the envelope opens, the [data-state] rules below re-layer
-   things to: back -> flap -> card -> front, so the card emerges in
-   front of the flap but stays masked by the front pocket. */
 .envelope__back        { z-index: 1; filter: drop-shadow(0 30px 40px rgba(82,63,29,0.22)); }
 .envelope__card-wrapper{ z-index: 2; }
 .envelope__flap-shadow { z-index: 3; opacity: 0; }
@@ -106,7 +83,6 @@ button, input, textarea { font: inherit; }
 .envelope__flap        { z-index: 5; }
 .envelope__trigger     { z-index: 9; }
 
-/* ----- Ambient glow ----- */
 .envelope__glow {
   position: absolute;
   inset: -12%;
@@ -121,32 +97,21 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- The invitation card -----
-   The WRAPPER handles only vertical position (translateY) — never
-   rotation — so its translate is always in un-rotated screen space
-   and stays purely vertical. The ROTATION + SCALE live on the inner
-   .envelope__card. Keeping them on separate elements means the
-   translate and rotate can't interact, so no sideways drift. */
+/* ----- The invitation card ----- */
 .envelope__card-wrapper {
   display: grid;
   place-items: start center;
-  /* Initial: tucked low inside the pocket. Pure vertical offset. */
+
+  /* Card is already inside the envelope from the beginning */
   transform: translateY(-60%);
-  opacity: 0;
+  opacity: 1;
+
   pointer-events: none;
   transition:
-    transform var(--t-card-rise) var(--ease-paper),
-    opacity 350ms ease;
+    transform var(--t-card-rise) var(--ease-paper);
 }
 
 .envelope__card {
-  /* Sized by HEIGHT so the card's tall dimension is the controlled
-     one. The card starts rotated -90deg (lying sideways), so this
-     height becomes the card's visual width on screen — setting it
-     near 100% makes the card span almost the full envelope width.
-     width:auto keeps the source aspect ratio (no distortion).
-     The browser scales the full-resolution source image; nothing
-     here downsamples it. image-rendering keeps the scaling smooth. */
   height: 56%;
   width: auto;
   margin-top: 6%;
@@ -157,36 +122,17 @@ button, input, textarea { font: inherit; }
   image-rendering: auto;
   user-select: none;
   pointer-events: none;
-  /* Rotation + scale live HERE, not on the wrapper. Initial state:
-     rotated sideways, small. The wrapper handles vertical position
-     separately, so these never interact with the rise. */
   transform-origin: 50% 50%;
   transform: rotate(-90deg) scale(0.5);
   transition: transform var(--t-card-flourish) var(--ease-flourish);
 }
 
-/* ----- The flap: a true 3D hinge -----
-   The flap element fills the FULL envelope canvas, exactly like the
-   other layers, so its art registers 1:1 with the back/front images.
-   It rotates about a single horizontal hinge line, --flap-hinge,
-   measured as a % down from the top of the canvas.
-
-   To calibrate for your art: find where the flap's fold/crease sits
-   in your envelope image and set --flap-hinge (in :root) to that %.
-   - Flap fold at the very top of the image  -> --flap-hinge: 0%
-   - Flap fold a third of the way down       -> --flap-hinge: 33%
-   The hinge line is set via transform-origin below; nothing else
-   needs to change.
-
-   --flap-lift shifts the whole flap vertically; it is included in
-   the transform of BOTH the closed and open states (below) so the
-   flap stays put when the hinge animates. */
+/* ----- The flap ----- */
 .envelope__flap {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Pivot about the fold line. X is centered; Y is the hinge %. */
   transform-origin: 50% var(--flap-hinge);
   transform-style: preserve-3d;
   transform: translateY(var(--flap-lift)) rotateX(0deg);
@@ -194,17 +140,10 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* On page load the flap should appear already in its resting
-   position — not animate into place. .envelope starts with the
-   .preload class (set in the HTML); it kills transitions so the
-   initial transform applies instantly. JS removes .preload after
-   the first paint, enabling transitions for the real interaction. */
 .envelope.preload * {
   transition: none !important;
 }
 
-/* Both faces fill the canvas identically and sit back-to-back.
-   backface-visibility hides whichever face points away from us. */
 .envelope__flap img {
   position: absolute;
   inset: 0;
@@ -215,18 +154,10 @@ button, input, textarea { font: inherit; }
   user-select: none;
 }
 
-/* Outer face: visible when the flap is closed (facing the viewer) */
 .flap-face {
   transform: rotateX(0deg);
 }
 
-/* Inner face: the back of the flap, revealed once it swings open.
-   The flap hinges on the X axis, so for backface-visibility to
-   correctly show/hide the two faces, the inner face must be
-   pre-rotated 180deg on that SAME X axis — that makes it a true
-   back-to-back pair with .flap-face. rotateX(180deg) alone would
-   leave the art mirrored top-to-bottom, so scaleX(-1) flips it
-   back to the correct orientation. */
 .flap-inside {
   transform: rotateY(180deg) scaleX(-1);
 }
@@ -266,13 +197,8 @@ button, input, textarea { font: inherit; }
    closed -> opening -> revealed
    ============================================================ */
 
-/* ----- opening: flap hinges open, card rises ----- */
-
 .envelope[data-state="opening"] .envelope__flap,
 .envelope[data-state="revealed"] .envelope__flap {
-  /* Swing the flap back and down past 90deg so it lies open.
-     --flap-lift is kept here so the flap stays at the same
-     vertical position as its closed state (no jump). */
   transform: translateY(var(--flap-lift)) rotateX(-158deg);
 }
 
@@ -284,30 +210,17 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="opening"] .envelope__card-wrapper {
   opacity: 1;
-  /* Pure vertical rise out of the pocket — no rotation here, so the
-     path stays perfectly straight up with no sideways drift. */
   transform: translateY(-80%);
-  /* Open-state layering: card sits ABOVE the flap (dropped to z 3
-     by the rule below) and BELOW the front panel (raised to z 5),
-     so it emerges in front of the flap but the front pocket still
-     masks its lower half. */
   z-index: 4;
   transition:
-    transform var(--t-card-rise) var(--ease-paper) 450ms,
-    opacity 300ms ease 450ms;
+    transform var(--t-card-rise) var(--ease-paper) 450ms;
 }
 
-/* The inner card stays rotated sideways while it rises. */
 .envelope[data-state="opening"] .envelope__card {
   transform: rotate(-90deg) scale(0.62);
   transition: transform var(--t-card-rise) var(--ease-paper) 450ms;
 }
 
-/* When the envelope opens, the flap drops BELOW the card, and the
-   front panel rises ABOVE the card. Closed-state order was
-   front(4) < flap(5); open-state order becomes flap(2) < card(4)
-   < front(5). Flap goes to 2 (not 3) to stay clear of the
-   flap-shadow at z 3. */
 .envelope[data-state="opening"] .envelope__flap,
 .envelope[data-state="revealed"] .envelope__flap {
   z-index: 2;
@@ -328,17 +241,13 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="revealed"] .envelope__card-wrapper {
   opacity: 1;
-  /* Vertical position only — center the card in the stage. */
   transform: translateY(-50%);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
-  z-index: 10; /* lift above flap + front panel */
+  z-index: 10;
 }
 
-/* The inner card rotates upright and scales up to the focal size.
-   Increase the scale for bigger, decrease for smaller — watch it
-   doesn't overflow the stage. */
 .envelope[data-state="revealed"] .envelope__card {
   transform: rotate(0deg) scale(1.2);
   transition: transform var(--t-card-flourish) var(--ease-flourish);
@@ -385,7 +294,11 @@ button, input, textarea { font: inherit; }
   .envelope__glow {
     transition-duration: 200ms !important;
   }
-  .trigger-hint, .scroll-cue { animation: none; }
+
+  .trigger-hint,
+  .scroll-cue {
+    animation: none;
+  }
 }
 
 /* ============================================================
@@ -413,7 +326,9 @@ button, input, textarea { font: inherit; }
   color: var(--gold);
 }
 
-.reply-by, form label span, legend {
+.reply-by,
+form label span,
+legend {
   display: block;
   text-transform: uppercase;
   letter-spacing: 0.26em;
@@ -421,9 +336,13 @@ button, input, textarea { font: inherit; }
   color: #bc8e46;
 }
 
-.reply-by { text-align: center; margin-bottom: 0.7rem; }
+.reply-by {
+  text-align: center;
+  margin-bottom: 0.7rem;
+}
 
-.rsvp-art h2, .admin-header h2 {
+.rsvp-art h2,
+.admin-header h2 {
   margin: 0;
   font-family: "Great Vibes", cursive;
   font-weight: 400;
@@ -444,12 +363,24 @@ button, input, textarea { font: inherit; }
   margin: 1.2rem 0 2.4rem;
 }
 
-.divider span { width: 4.4rem; height: 1px; background: var(--line); }
-.divider b { font-size: 0.8rem; color: #bf8736; }
+.divider span {
+  width: 4.4rem;
+  height: 1px;
+  background: var(--line);
+}
 
-form { display: grid; gap: 1.65rem; }
+.divider b {
+  font-size: 0.8rem;
+  color: #bf8736;
+}
 
-input, textarea {
+form {
+  display: grid;
+  gap: 1.65rem;
+}
+
+input,
+textarea {
   width: 100%;
   border: 0;
   border-bottom: 1px solid var(--line);
@@ -459,14 +390,22 @@ input, textarea {
   outline: none;
 }
 
-textarea { min-height: 6rem; resize: vertical; }
+textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: rgba(121, 103, 74, 0.48);
   font-style: italic;
 }
 
-fieldset { border: 0; margin: 0; padding: 0; }
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
 
 .option-grid {
   display: grid;
@@ -475,7 +414,10 @@ fieldset { border: 0; margin: 0; padding: 0; }
   margin-top: 0.9rem;
 }
 
-.option-grid label { min-height: 3.5rem; position: relative; }
+.option-grid label {
+  min-height: 3.5rem;
+  position: relative;
+}
 
 .option-grid input {
   position: absolute;
@@ -499,7 +441,8 @@ fieldset { border: 0; margin: 0; padding: 0; }
   border-color: #b9883c;
 }
 
-.send-button, .admin-header button {
+.send-button,
+.admin-header button {
   justify-self: center;
   min-width: min(100%, 420px);
   border: 1px solid #b9883c;
@@ -512,7 +455,8 @@ fieldset { border: 0; margin: 0; padding: 0; }
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.send-button:hover, .admin-header button:hover {
+.send-button:hover,
+.admin-header button:hover {
   background: #b9883c;
   color: var(--ivory);
   transform: translateY(-1px);
@@ -529,7 +473,10 @@ fieldset { border: 0; margin: 0; padding: 0; }
    ADMIN
    ============================================================ */
 
-.admin-page { min-height: 100vh; padding: 4rem 1rem; }
+.admin-page {
+  min-height: 100vh;
+  padding: 4rem 1rem;
+}
 
 .admin-section {
   width: min(100% - 2rem, 920px);
@@ -547,7 +494,10 @@ fieldset { border: 0; margin: 0; padding: 0; }
   padding-top: 2rem;
 }
 
-.admin-header p, .admin-header h2 { margin: 0; }
+.admin-header p,
+.admin-header h2 {
+  margin: 0;
+}
 
 .admin-header p {
   text-transform: uppercase;
@@ -566,7 +516,10 @@ fieldset { border: 0; margin: 0; padding: 0; }
   letter-spacing: 0.2em;
 }
 
-.admin-login { margin: 2rem 0; max-width: 32rem; }
+.admin-login {
+  margin: 2rem 0;
+  max-width: 32rem;
+}
 
 .stats {
   display: grid;
@@ -575,7 +528,8 @@ fieldset { border: 0; margin: 0; padding: 0; }
   margin: 1.5rem 0;
 }
 
-.stats div, .response-list article {
+.stats div,
+.response-list article {
   border: 1px solid rgba(169, 134, 66, 0.28);
   background: rgba(255, 253, 247, 0.56);
   padding: 1rem;
@@ -594,7 +548,10 @@ fieldset { border: 0; margin: 0; padding: 0; }
   color: var(--gold);
 }
 
-.response-list { display: grid; gap: 0.8rem; }
+.response-list {
+  display: grid;
+  gap: 0.8rem;
+}
 
 .response-list article {
   display: grid;
@@ -602,8 +559,14 @@ fieldset { border: 0; margin: 0; padding: 0; }
   gap: 0.6rem 1rem;
 }
 
-.response-list h3, .response-list p { margin: 0; }
-.response-list h3 { color: #6a583b; }
+.response-list h3,
+.response-list p {
+  margin: 0;
+}
+
+.response-list h3 {
+  color: #6a583b;
+}
 
 .response-list .status {
   text-transform: uppercase;
@@ -618,9 +581,25 @@ fieldset { border: 0; margin: 0; padding: 0; }
 }
 
 @media (max-width: 680px) {
-  .envelope { width: 96vw; }
-  .option-grid, .stats { grid-template-columns: 1fr; }
-  .admin-header { display: grid; align-items: start; }
-  .admin-header button { justify-self: start; }
-  .response-list article { grid-template-columns: 1fr; }
+  .envelope {
+    width: 96vw;
+  }
+
+  .option-grid,
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-header {
+    display: grid;
+    align-items: start;
+  }
+
+  .admin-header button {
+    justify-self: start;
+  }
+
+  .response-list article {
+    grid-template-columns: 1fr;
+  }
 }
