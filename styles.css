@@ -147,7 +147,7 @@ button, input, textarea { font: inherit; }
      width:auto keeps the source aspect ratio (no distortion).
      The browser scales the full-resolution source image; nothing
      here downsamples it. image-rendering keeps the scaling smooth. */
-  height: 92%;
+  height: 56%;
   width: auto;
   margin-top: 6%;
   border-radius: 2px;
@@ -222,7 +222,7 @@ button, input, textarea { font: inherit; }
    leave the art mirrored top-to-bottom, so scaleX(-1) flips it
    back to the correct orientation. */
 .flap-inside {
-  transform: rotateX(180deg) scaleX(-1);
+  transform: rotateY(180deg) scaleX(-1);
 }
 
 /* ----- Click trigger ----- */
@@ -318,7 +318,7 @@ button, input, textarea { font: inherit; }
   /* Final focal size. The base card is now larger (height-sized),
      so this scale stacks on top of that. Increase for bigger,
      decrease for smaller — watch it doesn't overflow the stage. */
-  transform: translateY(-50%) rotate(0deg) scale(1.5);
+  transform: translateY(-50%) rotate(0deg) scale(1.2);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
