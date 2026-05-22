@@ -86,7 +86,7 @@ button, input, textarea { font: inherit; }
 .layer-closed         { z-index: 1; opacity: 1;  transition: opacity 350ms var(--ease-paper); }
 .layer-slightly-open  { z-index: 1; opacity: 0;  transition: opacity 350ms var(--ease-paper); }
 .layer-open           { z-index: 1; opacity: 0;  transition: opacity 350ms var(--ease-paper); }
-.layer-front          { z-index: 3; opacity: 1;  /* always visible until card scales up */ }
+.layer-front          { z-index: 3; opacity: 0;  transition: opacity 350ms var(--ease-paper); /* fades in once envelope opens */ }
 
 /* Soft ambient glow */
 .stage-glow {
@@ -171,6 +171,13 @@ button, input, textarea { font: inherit; }
 
 .reveal-scene[data-state="opening"] .layer-open,
 .reveal-scene[data-state="revealed"] .layer-open {
+  opacity: 1;
+}
+
+/* Front pocket layer only appears once the envelope is open,
+   so the card can slide up behind it. */
+.reveal-scene[data-state="opening"] .layer-front,
+.reveal-scene[data-state="revealed"] .layer-front {
   opacity: 1;
 }
 
