@@ -91,14 +91,19 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- z-order (bottom -> top) -----
-   The flap sits ABOVE the front panel so it overlaps the front of
-   the envelope when closed and reads correctly as it swings open. */
+/* ----- z-order (bottom -> top) — CLOSED-STATE base -----
+   Closed stack: back -> card -> flap-shadow -> flap -> front
+   While the envelope is sealed, the card sits BEHIND both the flap
+   and the front panel, hidden inside the envelope.
+   When the envelope opens, the [data-state] rules below lift the
+   card ABOVE the flap (but still below the front panel) so it
+   emerges in front of the opening flap while staying masked by
+   the front pocket. */
 .envelope__back        { z-index: 1; filter: drop-shadow(0 30px 40px rgba(82,63,29,0.22)); }
 .envelope__card-wrapper{ z-index: 2; }
 .envelope__flap-shadow { z-index: 3; opacity: 0; }
-.envelope__front       { z-index: 4; }
-.envelope__flap        { z-index: 5; }
+.envelope__flap        { z-index: 4; }
+.envelope__front       { z-index: 6; }
 .envelope__trigger     { z-index: 9; }
 
 /* ----- Ambient glow ----- */
@@ -247,12 +252,13 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="opening"] .envelope__card-wrapper {
   opacity: 1;
-  /* Rise up out of the pocket, still sideways. Front panel still
-     masks the lower portion until it clears. */
+  /* Rise up out of the pocket, still sideways. */
   transform: translateY(-58%) rotate(-90deg) scale(0.62);
-  /* Lift above the flap (z 5) so the card is visible as it rises
-     and rotates, not hidden behind the opening flap. */
-  z-index: 10;
+  /* Now that the envelope is open, lift the card ABOVE the flap
+     (z 4) so it emerges in front of it — but keep it BELOW the
+     front panel (z 6) so the front pocket still masks its lower
+     half and it looks like it's coming out of the envelope. */
+  z-index: 5;
   transition:
     transform var(--t-card-rise) var(--ease-paper) 450ms,
     opacity 300ms ease 450ms;

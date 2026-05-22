@@ -18,7 +18,10 @@ const plusOneDetails = document.getElementById("plusOneDetails");
 // ====================================================================
 
 // Keep these in sync with the CSS transition timing.
-const PHASE_OPENING_MS = 1700; // flap swing + card rise (incl. 450ms delay)
+// Card rise = 450ms delay + 1150ms (--t-card-rise) = finishes at 1600ms.
+// PHASE_OPENING_MS must match that so the rotate begins the instant
+// the rise ends — no frozen gap between the two moves.
+const PHASE_OPENING_MS = 1600; // flap swing + card rise (incl. 450ms delay)
 const PHASE_REVEALED_MS = 1300; // card rotate upright + scale
 
 let hasOpened = false;
