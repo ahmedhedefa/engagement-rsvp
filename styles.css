@@ -759,14 +759,15 @@ fieldset {
 
 @media (max-width: 480px) {
   :root {
-    --card-closed-y: -48%;
-    --card-opening-y: -72%;
-    --card-revealed-y: -46%;
-    --card-top: 9%;
-    --card-height: 46%;
-    --card-start-scale: 0.44;
-    --card-opening-scale: 0.5;
-    --card-revealed-scale: 0.78;
+    --card-closed-y: -28%;
+    --card-opening-y: -60%;
+    --card-revealed-y: -38%;
+    --card-top: 14%;
+
+    --card-height: 68%;
+    --card-start-scale: 1;
+    --card-opening-scale: 1;
+    --card-revealed-scale: 1;
   }
 
   .invite-stage {
@@ -786,14 +787,15 @@ fieldset {
 
 @media (max-height: 720px) and (max-width: 480px) {
   :root {
-    --card-closed-y: -44%;
-    --card-opening-y: -66%;
-    --card-revealed-y: -42%;
-    --card-top: 10%;
-    --card-height: 44%;
-    --card-start-scale: 0.42;
-    --card-opening-scale: 0.48;
-    --card-revealed-scale: 0.7;
+    --card-closed-y: -24%;
+    --card-opening-y: -56%;
+    --card-revealed-y: -34%;
+    --card-top: 15%;
+
+    --card-height: 64%;
+    --card-start-scale: 1;
+    --card-opening-scale: 1;
+    --card-revealed-scale: 1;
   }
 
   .invite-stage {
@@ -805,4 +807,3 @@ fieldset {
     width: 94vw;
   }
 }
-
