@@ -16,7 +16,7 @@
        Flap fold at the very top edge of the image -> 0%.
        Flap fold a third of the way down           -> 33%.
      ------------------------------------------------------------- */
-  --env-aspect: 1 / 1;   /* <-- replace with your image's W / H */
+  --env-aspect: 840 / 600;   /* <-- replace with your image's W / H */
   --flap-hinge: 0%;      /* <-- replace with your flap's fold % */
 
   /* --- Animation timing (tweak freely) ------------------------- */
