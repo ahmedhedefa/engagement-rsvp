@@ -137,13 +137,21 @@ button, input, textarea { font: inherit; }
 }
 
 .envelope__card {
-  width: 64%;
-  height: auto;
+  /* Sized by HEIGHT so the card's tall dimension is the controlled
+     one. The card starts rotated -90deg (lying sideways), so this
+     height becomes the card's visual width on screen — setting it
+     near 100% makes the card span almost the full envelope width.
+     width:auto keeps the source aspect ratio (no distortion).
+     The browser scales the full-resolution source image; nothing
+     here downsamples it. image-rendering keeps the scaling smooth. */
+  height: 92%;
+  width: auto;
   margin-top: 6%;
   border-radius: 2px;
   box-shadow:
     0 2px 6px rgba(82, 63, 29, 0.18),
     0 22px 44px rgba(82, 63, 29, 0.26);
+  image-rendering: auto;
   user-select: none;
   pointer-events: none;
 }
@@ -177,6 +185,15 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
+/* On page load the flap should appear already in its resting
+   position — not animate into place. .envelope starts with the
+   .preload class (set in the HTML); it kills transitions so the
+   initial transform applies instantly. JS removes .preload after
+   the first paint, enabling transitions for the real interaction. */
+.envelope.preload * {
+  transition: none !important;
+}
+
 /* Both faces fill the canvas identically and sit back-to-back.
    backface-visibility hides whichever face points away from us. */
 .envelope__flap img {
@@ -194,9 +211,15 @@ button, input, textarea { font: inherit; }
   transform: rotateX(0deg);
 }
 
-/* Inner face: the back of the flap, revealed once it swings open */
+/* Inner face: the back of the flap, revealed once it swings open.
+   The flap hinges on the X axis, so for backface-visibility to
+   correctly show/hide the two faces, the inner face must be
+   pre-rotated 180deg on that SAME X axis — that makes it a true
+   back-to-back pair with .flap-face. rotateX(180deg) alone would
+   leave the art mirrored top-to-bottom, so scaleX(-1) flips it
+   back to the correct orientation. */
 .flap-inside {
-  transform: rotateY(180deg);
+  transform: rotateX(180deg) scaleX(-1);
 }
 
 /* ----- Click trigger ----- */
@@ -289,9 +312,10 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="revealed"] .envelope__card-wrapper {
   opacity: 1;
-  /* Final focal size. Increase the scale value to make the card
-     end larger; decrease it to make it smaller. */
-  transform: translateY(-50%) rotate(0deg) scale(1.35);
+  /* Final focal size. The base card is now larger (height-sized),
+     so this scale stacks on top of that. Increase for bigger,
+     decrease for smaller — watch it doesn't overflow the stage. */
+  transform: translateY(-50%) rotate(0deg) scale(1.5);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;

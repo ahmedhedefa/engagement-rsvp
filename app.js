@@ -7,6 +7,18 @@ const plusOneYes = document.getElementById("plusOneYes");
 const plusOneNo = document.getElementById("plusOneNo");
 const plusOneDetails = document.getElementById("plusOneDetails");
 
+// Remove the .preload class once the page has painted its first
+// frame. While .preload is present, all envelope transitions are
+// disabled (see styles.css), so the flap appears in its resting
+// position instantly instead of animating into place on load.
+// A double requestAnimationFrame guarantees the initial styles
+// have been applied and painted before transitions are enabled.
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    envelope.classList.remove("preload");
+  });
+});
+
 // ====================================================================
 // Envelope reveal sequence
 // State machine: closed -> opening -> revealed
@@ -19,9 +31,11 @@ const plusOneDetails = document.getElementById("plusOneDetails");
 
 // Keep these in sync with the CSS transition timing.
 // Card rise = 450ms delay + 1150ms (--t-card-rise) = finishes at 1600ms.
-// PHASE_OPENING_MS must match that so the rotate begins the instant
-// the rise ends — no frozen gap between the two moves.
-const PHASE_OPENING_MS = 1600; // flap swing + card rise (incl. 450ms delay)
+// Rise = 450ms delay + 1150ms (--t-card-rise) = settles at 1600ms.
+// But --ease-paper decelerates hard at the end, so the card nearly
+// stalls in its last ~250ms. Starting the rotate 250ms BEFORE the
+// rise fully settles overlaps the two moves and removes that stall.
+const PHASE_OPENING_MS = 1350; // rotate picks up while rise is still easing out
 const PHASE_REVEALED_MS = 1300; // card rotate upright + scale
 
 let hasOpened = false;
