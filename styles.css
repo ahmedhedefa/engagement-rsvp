@@ -183,7 +183,7 @@ button, input, textarea { font: inherit; }
 
 /* Inner face: the back of the flap, revealed once it swings open */
 .flap-inside {
-  transform: rotateX(180deg);
+  transform: rotateY(180deg);
 }
 
 /* ----- Click trigger ----- */
