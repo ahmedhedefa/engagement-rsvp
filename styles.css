@@ -250,6 +250,9 @@ button, input, textarea { font: inherit; }
   /* Rise up out of the pocket, still sideways. Front panel still
      masks the lower portion until it clears. */
   transform: translateY(-58%) rotate(-90deg) scale(0.62);
+  /* Lift above the flap (z 5) so the card is visible as it rises
+     and rotates, not hidden behind the opening flap. */
+  z-index: 10;
   transition:
     transform var(--t-card-rise) var(--ease-paper) 450ms,
     opacity 300ms ease 450ms;
@@ -265,7 +268,9 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="revealed"] .envelope__card-wrapper {
   opacity: 1;
-  transform: translateY(-50%) rotate(0deg) scale(1.16);
+  /* Final focal size. Increase the scale value to make the card
+     end larger; decrease it to make it smaller. */
+  transform: translateY(-50%) rotate(0deg) scale(1.35);
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
