@@ -15,9 +15,13 @@
        the top of the canvas — the hinge axis for the 3D rotateX.
        Flap fold at the very top edge of the image -> 0%.
        Flap fold a third of the way down           -> 33%.
+     --flap-lift: vertical nudge for the flap's position. Negative
+       values move it up. Applied in both closed and open states so
+       the flap does not jump when the animation starts.
      ------------------------------------------------------------- */
   --env-aspect: 840 / 600;   /* <-- replace with your image's W / H */
   --flap-hinge: 5%;      /* <-- replace with your flap's fold % */
+  --flap-lift: -4%;      /* <-- nudge flap up/down (negative = up) */
 
   /* --- Animation timing (tweak freely) ------------------------- */
   --t-flap: 1100ms;          /* flap hinge swinging open */
@@ -150,7 +154,11 @@ button, input, textarea { font: inherit; }
    - Flap fold at the very top of the image  -> --flap-hinge: 0%
    - Flap fold a third of the way down       -> --flap-hinge: 33%
    The hinge line is set via transform-origin below; nothing else
-   needs to change. */
+   needs to change.
+
+   --flap-lift shifts the whole flap vertically; it is included in
+   the transform of BOTH the closed and open states (below) so the
+   flap stays put when the hinge animates. */
 .envelope__flap {
   position: absolute;
   inset: 0;
@@ -159,7 +167,7 @@ button, input, textarea { font: inherit; }
   /* Pivot about the fold line. X is centered; Y is the hinge %. */
   transform-origin: 50% var(--flap-hinge);
   transform-style: preserve-3d;
-  transform: rotateX(0deg);
+  transform: translateY(var(--flap-lift)) rotateX(0deg);
   transition: transform var(--t-flap) var(--ease-paper);
   pointer-events: none;
 }
@@ -225,8 +233,10 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="opening"] .envelope__flap,
 .envelope[data-state="revealed"] .envelope__flap {
-  /* Swing the flap back and down past 90deg so it lies open */
-  transform: rotateX(-158deg);
+  /* Swing the flap back and down past 90deg so it lies open.
+     --flap-lift is kept here so the flap stays at the same
+     vertical position as its closed state (no jump). */
+  transform: translateY(var(--flap-lift)) rotateX(-158deg);
 }
 
 .envelope[data-state="opening"] .envelope__flap-shadow,
