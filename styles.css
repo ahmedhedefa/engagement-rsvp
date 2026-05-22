@@ -17,7 +17,7 @@
        Flap fold a third of the way down           -> 33%.
      ------------------------------------------------------------- */
   --env-aspect: 840 / 600;   /* <-- replace with your image's W / H */
-  --flap-hinge: 0%;      /* <-- replace with your flap's fold % */
+  --flap-hinge: 5%;      /* <-- replace with your flap's fold % */
 
   /* --- Animation timing (tweak freely) ------------------------- */
   --t-flap: 1100ms;          /* flap hinge swinging open */
