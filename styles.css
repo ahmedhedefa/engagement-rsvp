@@ -26,8 +26,8 @@
     The card is always horizontally centered with the envelope.
     Mobile only changes these variables, not the positioning logic.
   */
-  --card-closed-y: -60%;
-  --card-opening-y: -80%;
+  --card-closed-y: -10%;
+  --card-opening-y: -30%;
   --card-revealed-y: -50%;
   --card-top: 6%;
   --card-height: 56%;
