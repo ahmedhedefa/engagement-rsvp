@@ -21,6 +21,20 @@
   /* The card stays behind the flap until this delay passes */
   --card-layer-delay: 450ms;
 
+  /*
+    Shared card positioning.
+    The card is always horizontally centered with the envelope.
+    Mobile only changes these variables, not the positioning logic.
+  */
+  --card-closed-y: -60%;
+  --card-opening-y: -80%;
+  --card-revealed-y: -50%;
+  --card-top: 6%;
+  --card-height: 56%;
+  --card-start-scale: 0.5;
+  --card-opening-scale: 0.62;
+  --card-revealed-scale: 1.2;
+
   --ease-paper: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-flourish: cubic-bezier(0.18, 0.86, 0.34, 1.08);
 }
@@ -128,11 +142,10 @@ button, input, textarea { font: inherit; }
 
 /* ----- The invitation card ----- */
 .envelope__card-wrapper {
-  display: grid;
-  place-items: start center;
+  display: block;
 
-  /* Card is already inside from the beginning */
-  transform: translateY(-60%);
+  /* Wrapper only handles vertical movement. */
+  transform: translateY(var(--card-closed-y));
   opacity: 1;
 
   pointer-events: none;
@@ -141,9 +154,20 @@ button, input, textarea { font: inherit; }
 }
 
 .envelope__card {
-  height: 56%;
+  position: absolute;
+  left: 50%;
+  top: var(--card-top);
+
+  /*
+    This is the key fix.
+    Horizontal centering is separate from rotate/scale, so the card
+    cannot drift right on mobile.
+  */
+  translate: -50% 0;
+
+  height: var(--card-height);
   width: auto;
-  margin-top: 6%;
+  margin-top: 0;
   border-radius: 2px;
   box-shadow:
     0 2px 6px rgba(82, 63, 29, 0.18),
@@ -152,7 +176,7 @@ button, input, textarea { font: inherit; }
   user-select: none;
   pointer-events: none;
   transform-origin: 50% 50%;
-  transform: rotate(-90deg) scale(0.5);
+  transform: rotate(-90deg) scale(var(--card-start-scale));
   transition: transform var(--t-card-flourish) var(--ease-flourish);
 }
 
@@ -272,7 +296,7 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="opening"] .envelope__card-wrapper {
   opacity: 1;
-  transform: translateY(-80%);
+  transform: translateY(var(--card-opening-y));
 
   /*
     Card stays behind the flap at first.
@@ -285,7 +309,7 @@ button, input, textarea { font: inherit; }
 }
 
 .envelope[data-state="opening"] .envelope__card {
-  transform: rotate(-90deg) scale(0.62);
+  transform: rotate(-90deg) scale(var(--card-opening-scale));
   transition:
     transform var(--t-card-rise) var(--ease-paper) var(--card-layer-delay);
 }
@@ -317,7 +341,7 @@ button, input, textarea { font: inherit; }
 
 .envelope[data-state="revealed"] .envelope__card-wrapper {
   opacity: 1;
-  transform: translateY(-50%);
+  transform: translateY(var(--card-revealed-y));
   transition:
     transform var(--t-card-flourish) var(--ease-flourish),
     opacity 400ms ease;
@@ -325,7 +349,7 @@ button, input, textarea { font: inherit; }
 }
 
 .envelope[data-state="revealed"] .envelope__card {
-  transform: rotate(0deg) scale(1.2);
+  transform: rotate(0deg) scale(var(--card-revealed-scale));
   transition: transform var(--t-card-flourish) var(--ease-flourish);
 }
 
@@ -668,16 +692,29 @@ fieldset {
    ============================================================ */
 
 /*
-  Mobile uses the SAME card logic as desktop:
-  - .envelope__card-wrapper centers the card and handles vertical movement
-  - .envelope__card only rotates and scales
-  - no absolute positioning
-  - no left/top offsets
+  Mobile now uses the exact same positioning logic as desktop.
 
-  This keeps the card centered with the envelope at the start point.
+  The card is always:
+  - inside .envelope__card-wrapper
+  - horizontally centered with left: 50% and translate: -50% 0
+  - moved vertically only by the wrapper
+  - rotated/scaled only by the img
+
+  These media queries only adjust CSS variables for size/height.
 */
 
 @media (max-width: 768px) {
+  :root {
+    --card-closed-y: -52%;
+    --card-opening-y: -76%;
+    --card-revealed-y: -48%;
+    --card-top: 8%;
+    --card-height: 50%;
+    --card-start-scale: 0.48;
+    --card-opening-scale: 0.54;
+    --card-revealed-scale: 0.9;
+  }
+
   .invite-stage {
     min-height: 100vh;
     min-height: 100svh;
@@ -687,39 +724,6 @@ fieldset {
 
   .envelope {
     width: min(96vw, 620px);
-  }
-
-  .envelope__card-wrapper {
-    display: grid;
-    place-items: start center;
-    transform: translateY(-46%);
-  }
-
-  .envelope__card {
-    position: static;
-    left: auto;
-    top: auto;
-    height: 46%;
-    width: auto;
-    margin-top: 11%;
-    transform-origin: 50% 50%;
-    transform: rotate(-90deg) scale(0.48);
-  }
-
-  .envelope[data-state="opening"] .envelope__card-wrapper {
-    transform: translateY(-72%);
-  }
-
-  .envelope[data-state="opening"] .envelope__card {
-    transform: rotate(-90deg) scale(0.54);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-48%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(0.86);
   }
 
   .trigger-hint {
@@ -754,44 +758,23 @@ fieldset {
 }
 
 @media (max-width: 480px) {
+  :root {
+    --card-closed-y: -48%;
+    --card-opening-y: -72%;
+    --card-revealed-y: -46%;
+    --card-top: 9%;
+    --card-height: 46%;
+    --card-start-scale: 0.44;
+    --card-opening-scale: 0.5;
+    --card-revealed-scale: 0.78;
+  }
+
   .invite-stage {
     padding: 1.25rem 0.5rem 3.25rem;
   }
 
   .envelope {
     width: 98vw;
-  }
-
-  .envelope__card-wrapper {
-    display: grid;
-    place-items: start center;
-    transform: translateY(-42%);
-  }
-
-  .envelope__card {
-    position: static;
-    left: auto;
-    top: auto;
-    height: 42%;
-    width: auto;
-    margin-top: 13%;
-    transform: rotate(-90deg) scale(0.44);
-  }
-
-  .envelope[data-state="opening"] .envelope__card-wrapper {
-    transform: translateY(-68%);
-  }
-
-  .envelope[data-state="opening"] .envelope__card {
-    transform: rotate(-90deg) scale(0.5);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-44%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(0.76);
   }
 
   .trigger-hint {
@@ -802,6 +785,17 @@ fieldset {
 }
 
 @media (max-height: 720px) and (max-width: 480px) {
+  :root {
+    --card-closed-y: -44%;
+    --card-opening-y: -66%;
+    --card-revealed-y: -42%;
+    --card-top: 10%;
+    --card-height: 44%;
+    --card-start-scale: 0.42;
+    --card-opening-scale: 0.48;
+    --card-revealed-scale: 0.7;
+  }
+
   .invite-stage {
     padding-top: 0.75rem;
     padding-bottom: 2.5rem;
@@ -809,32 +803,6 @@ fieldset {
 
   .envelope {
     width: 94vw;
-  }
-
-  .envelope__card-wrapper {
-    transform: translateY(-38%);
-  }
-
-  .envelope__card {
-    height: 40%;
-    margin-top: 14%;
-    transform: rotate(-90deg) scale(0.42);
-  }
-
-  .envelope[data-state="opening"] .envelope__card-wrapper {
-    transform: translateY(-62%);
-  }
-
-  .envelope[data-state="opening"] .envelope__card {
-    transform: rotate(-90deg) scale(0.46);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card-wrapper {
-    transform: translateY(-40%);
-  }
-
-  .envelope[data-state="revealed"] .envelope__card {
-    transform: rotate(0deg) scale(0.68);
   }
 }
 
