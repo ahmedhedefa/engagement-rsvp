@@ -18,58 +18,82 @@
   <body>
     <main class="page-shell">
       <section class="invite-stage" aria-label="Engagement invitation">
-        <div class="reveal-scene" id="revealScene" data-state="closed">
-          <div class="stage-glow" aria-hidden="true"></div>
+        <!--
+          ENVELOPE STRUCTURE (mirrors the Webflow template's Navigator tree):
 
-          <!-- LAYER 1 (back): sealed envelope. Visible at start. -->
+            .envelope                       scene / 3D perspective context
+            ├── .envelope__back             bottom layer: envelope back + pocket
+            │   └── img  envelope-back
+            ├── .envelope__card-wrapper     the invitation card; slides up & rotates
+            │   └── img  invitation card
+            ├── .envelope__flap-shadow      soft shadow cast by the opening flap
+            │   └── img  flap-shadow
+            ├── .envelope__flap             the flap; hinges open on a 3D rotateX
+            │   ├── img .flap-face          outer face of the flap (sealed view)
+            │   └── img .flap-inside        inner face (revealed as it opens)
+            └── .envelope__front            front pocket panel; masks card's lower half
+                └── img  envelope-front
+
+          IMAGE FILES YOU NEED TO ADD (drop into project root, match these names):
+            envelope-back.webp   - envelope back panel + pocket, no flap
+            envelope-flap.webp   - the triangular flap only, transparent elsewhere
+            flap-inside.webp     - inner face of the flap (gold lining etc.)
+            flap-shadow.webp     - soft triangular shadow (semi-transparent)
+            envelope-front.webp  - front pocket panel (transparent where card shows)
+            invitation_7pm.png   - the invitation card (you already have this)
+
+          All envelope images should share the SAME canvas dimensions so the
+          layers register exactly when stacked. Set --env-aspect below to match.
+        -->
+        <div class="envelope" id="envelope" data-state="closed">
+          <div class="envelope__glow" aria-hidden="true"></div>
+
+          <!-- Bottom layer: envelope back + pocket -->
           <img
-            src="/envelope-closed.png"
+            src="/envelope-back.webp"
             alt=""
-            class="layer layer-closed"
+            class="envelope__back"
             aria-hidden="true"
             draggable="false"
           />
 
-          <!-- LAYER 2 (back, intermediate): envelope with flap just barely lifted. -->
-          <img
-            src="/envelope-slightly-open.png"
-            alt=""
-            class="layer layer-slightly-open"
-            aria-hidden="true"
-            draggable="false"
-          />
-
-          <!-- LAYER 3 (back, final state): envelope wide open with pocket visible. -->
-          <img
-            src="/envelope-open.png"
-            alt=""
-            class="layer layer-open"
-            aria-hidden="true"
-            draggable="false"
-          />
-
-          <!-- LAYER 4 (middle): the invitation card. Slides up from behind. -->
-          <div class="card-stage" aria-hidden="true">
+          <!-- The invitation card -->
+          <div class="envelope__card-wrapper" aria-hidden="true">
             <img
               src="/invitation_7pm.png"
               alt="The engagement invitation for Ahmed and Christine"
-              class="invitation-card"
+              class="envelope__card"
               draggable="false"
             />
           </div>
 
-          <!-- LAYER 5 (front mask): the pocket. Hides bottom of card so it looks tucked in. -->
+          <!-- Soft shadow the flap casts as it opens -->
           <img
-            src="/front-layer.png"
+            src="/flap-shadow.webp"
             alt=""
-            class="layer layer-front"
+            class="envelope__flap-shadow"
             aria-hidden="true"
             draggable="false"
           />
 
-          <!-- Click target -->
+          <!-- The flap: a 3D-hinged element with an outer and inner face -->
+          <div class="envelope__flap" aria-hidden="true">
+            <img src="/envelope-flap.webp" alt="" class="flap-face" draggable="false" />
+            <img src="/flap-inside.webp" alt="" class="flap-inside" draggable="false" />
+          </div>
+
+          <!-- Front pocket panel: sits on top, masks the card's lower half -->
+          <img
+            src="/envelope-front.webp"
+            alt=""
+            class="envelope__front"
+            aria-hidden="true"
+            draggable="false"
+          />
+
+          <!-- Invisible click target -->
           <button
-            class="open-trigger"
+            class="envelope__trigger"
             id="openInvite"
             type="button"
             aria-label="Open invitation"
