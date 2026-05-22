@@ -131,7 +131,7 @@ button, input, textarea { font: inherit; }
   display: grid;
   place-items: start center;
   /* Initial: tucked low inside the pocket. Pure vertical offset. */
-  transform: translateY(8%);
+  transform: translateY(0%);
   opacity: 0;
   pointer-events: none;
   transition:
