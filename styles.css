@@ -31,8 +31,8 @@
   --card-revealed-y: -50%;
   --card-top: 6%;
   --card-height: 56%;
-  --card-start-scale: 0.5;
-  --card-opening-scale: 0.62;
+  --card-start-scale: 1;
+  --card-opening-scale: 1.1;
   --card-revealed-scale: 1.2;
 
   --ease-paper: cubic-bezier(0.22, 0.61, 0.36, 1);
