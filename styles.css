@@ -8,14 +8,16 @@
   --line: rgba(169, 134, 66, 0.42);
   --shadow: 0 28px 80px rgba(95, 73, 37, 0.24);
 
-  /* --- Envelope geometry ---------------------------------------
-     Set --env-aspect to your envelope images' width/height ratio.
-     Your current envelope PNGs are 1122 x 1402.
-     The flap fold sits ~34% down from the top of the canvas; that
-     is the hinge line for the 3D rotateX. Adjust --flap-hinge if
-     your flap-only image pivots elsewhere. ------------------------ */
-  --env-aspect: 1122 / 1402;
-  --flap-hinge: 34%;
+  /* --- Envelope geometry — SET THESE TWO FOR YOUR IMAGES --------
+     --env-aspect: your envelope image's width / height
+       (e.g. an 840x600 image -> 840 / 600).
+     --flap-hinge: where the flap's fold line sits, as a % down from
+       the top of the canvas — the hinge axis for the 3D rotateX.
+       Flap fold at the very top edge of the image -> 0%.
+       Flap fold a third of the way down           -> 33%.
+     ------------------------------------------------------------- */
+  --env-aspect: 1 / 1;   /* <-- replace with your image's W / H */
+  --flap-hinge: 0%;      /* <-- replace with your flap's fold % */
 
   /* --- Animation timing (tweak freely) ------------------------- */
   --t-flap: 1100ms;          /* flap hinge swinging open */
@@ -85,12 +87,14 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- z-order (bottom -> top) ----- */
+/* ----- z-order (bottom -> top) -----
+   The flap sits ABOVE the front panel so it overlaps the front of
+   the envelope when closed and reads correctly as it swings open. */
 .envelope__back        { z-index: 1; filter: drop-shadow(0 30px 40px rgba(82,63,29,0.22)); }
 .envelope__card-wrapper{ z-index: 2; }
 .envelope__flap-shadow { z-index: 3; opacity: 0; }
-.envelope__flap        { z-index: 4; }
-.envelope__front       { z-index: 5; }
+.envelope__front       { z-index: 4; }
+.envelope__flap        { z-index: 5; }
 .envelope__trigger     { z-index: 9; }
 
 /* ----- Ambient glow ----- */
@@ -135,43 +139,49 @@ button, input, textarea { font: inherit; }
   pointer-events: none;
 }
 
-/* ----- The flap: a true 3D hinge ----- */
+/* ----- The flap: a true 3D hinge -----
+   The flap element fills the FULL envelope canvas, exactly like the
+   other layers, so its art registers 1:1 with the back/front images.
+   It rotates about a single horizontal hinge line, --flap-hinge,
+   measured as a % down from the top of the canvas.
+
+   To calibrate for your art: find where the flap's fold/crease sits
+   in your envelope image and set --flap-hinge (in :root) to that %.
+   - Flap fold at the very top of the image  -> --flap-hinge: 0%
+   - Flap fold a third of the way down       -> --flap-hinge: 33%
+   The hinge line is set via transform-origin below; nothing else
+   needs to change. */
 .envelope__flap {
   position: absolute;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100%;
-  /* The flap element spans from the top of the canvas down to the
-     hinge fold line; it rotates about its TOP edge. */
-  height: var(--flap-hinge);
-  transform-origin: 50% 0%;
+  height: 100%;
+  /* Pivot about the fold line. X is centered; Y is the hinge %. */
+  transform-origin: 50% var(--flap-hinge);
   transform-style: preserve-3d;
   transform: rotateX(0deg);
   transition: transform var(--t-flap) var(--ease-paper);
   pointer-events: none;
 }
 
-/* The flap art is full-canvas; each face is clipped to just the
-   flap region by being placed inside the height-limited wrapper
-   with overflow visible, then offset so the flap sits correctly. */
+/* Both faces fill the canvas identically and sit back-to-back.
+   backface-visibility hides whichever face points away from us. */
 .envelope__flap img {
   position: absolute;
-  left: 0;
-  top: 0;
+  inset: 0;
   width: 100%;
-  /* Image is full envelope height; wrapper only shows the top band */
-  height: calc(100% / (var(--flap-hinge) / 100%));
+  height: 100%;
   object-fit: contain;
   backface-visibility: hidden;
   user-select: none;
 }
 
-/* Outer face: visible when flap is closed */
+/* Outer face: visible when the flap is closed (facing the viewer) */
 .flap-face {
   transform: rotateX(0deg);
 }
 
-/* Inner face: visible when flap has swung open (its back) */
+/* Inner face: the back of the flap, revealed once it swings open */
 .flap-inside {
   transform: rotateX(180deg);
 }
