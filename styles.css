@@ -92,18 +92,18 @@ button, input, textarea { font: inherit; }
 }
 
 /* ----- z-order (bottom -> top) — CLOSED-STATE base -----
-   Closed stack: back -> card -> flap-shadow -> flap -> front
-   While the envelope is sealed, the card sits BEHIND both the flap
-   and the front panel, hidden inside the envelope.
-   When the envelope opens, the [data-state] rules below lift the
-   card ABOVE the flap (but still below the front panel) so it
-   emerges in front of the opening flap while staying masked by
-   the front pocket. */
+   Closed stack: back -> card -> flap-shadow -> front -> flap
+   While sealed: the flap is the TOP layer (it's the last fold of a
+   real envelope), the front panel is under it, and the card is
+   hidden at the bottom inside the envelope.
+   When the envelope opens, the [data-state] rules below re-layer
+   things to: back -> flap -> card -> front, so the card emerges in
+   front of the flap but stays masked by the front pocket. */
 .envelope__back        { z-index: 1; filter: drop-shadow(0 30px 40px rgba(82,63,29,0.22)); }
 .envelope__card-wrapper{ z-index: 2; }
 .envelope__flap-shadow { z-index: 3; opacity: 0; }
-.envelope__flap        { z-index: 4; }
-.envelope__front       { z-index: 6; }
+.envelope__front       { z-index: 4; }
+.envelope__flap        { z-index: 5; }
 .envelope__trigger     { z-index: 9; }
 
 /* ----- Ambient glow ----- */
@@ -254,14 +254,29 @@ button, input, textarea { font: inherit; }
   opacity: 1;
   /* Rise up out of the pocket, still sideways. */
   transform: translateY(-58%) rotate(-90deg) scale(0.62);
-  /* Now that the envelope is open, lift the card ABOVE the flap
-     (z 4) so it emerges in front of it — but keep it BELOW the
-     front panel (z 6) so the front pocket still masks its lower
-     half and it looks like it's coming out of the envelope. */
-  z-index: 5;
+  /* Open-state layering: card sits ABOVE the flap (dropped to z 3
+     by the rule below) and BELOW the front panel (raised to z 5),
+     so it emerges in front of the flap but the front pocket still
+     masks its lower half. */
+  z-index: 4;
   transition:
     transform var(--t-card-rise) var(--ease-paper) 450ms,
     opacity 300ms ease 450ms;
+}
+
+/* When the envelope opens, the flap drops BELOW the card, and the
+   front panel rises ABOVE the card. Closed-state order was
+   front(4) < flap(5); open-state order becomes flap(2) < card(4)
+   < front(5). Flap goes to 2 (not 3) to stay clear of the
+   flap-shadow at z 3. */
+.envelope[data-state="opening"] .envelope__flap,
+.envelope[data-state="revealed"] .envelope__flap {
+  z-index: 2;
+}
+
+.envelope[data-state="opening"] .envelope__front,
+.envelope[data-state="revealed"] .envelope__front {
+  z-index: 5;
 }
 
 .envelope[data-state="opening"] .envelope__trigger,
