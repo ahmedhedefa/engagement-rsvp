@@ -52,17 +52,20 @@ openInvite.addEventListener("click", () => {
     envelope.dataset.state = "revealed";
   }, PHASE_OPENING_MS);
 
-  // After full reveal: show scroll cue + gently scroll to RSVP
+  // After the reveal, give the guest a long, unhurried moment to
+  // look at the card before the RSVP cue appears. No auto-scroll —
+  // the guest scrolls themselves, or clicks the cue button.
   setTimeout(() => {
     scrollCue.classList.add("is-visible");
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS);
+  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 2600);
+});
 
-  setTimeout(() => {
-    document.getElementById("rsvp").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 1400);
+// Clicking the cue button smoothly scrolls down to the RSVP form.
+scrollCue.addEventListener("click", () => {
+  document.getElementById("rsvp").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 });
 
 // ====================================================================

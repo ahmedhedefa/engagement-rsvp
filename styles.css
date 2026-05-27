@@ -33,7 +33,7 @@
 
   --card-closed-y: var(--card-y-base);
   --card-opening-y: calc(var(--card-y-base) - 20%);
-  --card-revealed-y: calc(var(--card-y-base) - 25%);
+  --card-revealed-y: calc(var(--card-y-base) - 12%);
   --card-top: var(--card-top-base);
   --card-height: var(--card-height-base);
   --card-start-scale: var(--card-scale-base);
@@ -70,6 +70,11 @@ button, input, textarea { font: inherit; }
 .invite-stage {
   min-height: 100vh;
   min-height: 100svh;
+  /* 100dvh tracks the viewport as the mobile browser UI shows/hides,
+     so the marble always fills exactly what's on screen — no strip
+     of the section below peeking through. Last declaration wins
+     where supported. */
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   position: relative;
@@ -374,33 +379,49 @@ button, input, textarea { font: inherit; }
   opacity: 1;
 }
 
-/* ----- Scroll cue ----- */
+/* ----- Scroll cue — a visible, clickable button ----- */
 .scroll-cue {
   position: absolute;
-  bottom: 1.8rem;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.5rem;
+  border: 1px solid rgba(169, 134, 66, 0.55);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.9);
   color: var(--gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
-  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  font-size: 0.82rem;
+  cursor: pointer;
   opacity: 0;
-  transition: opacity 600ms ease;
-  animation: cue-bob 2.4s ease-in-out infinite;
+  pointer-events: none;
+  box-shadow: 0 10px 28px rgba(95, 73, 37, 0.22);
+  transition: opacity 600ms ease, background 200ms ease, transform 200ms ease;
 }
 
 .scroll-cue.is-visible {
   opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-cue:hover {
+  background: var(--gold);
+  color: var(--ivory);
+}
+
+.scroll-cue__arrow {
+  font-size: 0.95rem;
+  animation: cue-bob 2.4s ease-in-out infinite;
 }
 
 @keyframes cue-bob {
-  0%, 100% {
-    transform: translate(-50%, 0);
-  }
-
-  50% {
-    transform: translate(-50%, 6px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -422,10 +443,7 @@ button, input, textarea { font: inherit; }
    ============================================================ */
 
 .rsvp-art {
-  border: 1px solid rgba(169, 134, 66, 0.32);
-  background:
-    linear-gradient(90deg, rgba(169, 134, 66, 0.14) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
-    linear-gradient(180deg, rgba(255, 253, 247, 0.95), rgba(251, 248, 240, 0.96));
+  background: transparent;
 }
 
 .rsvp-section {
@@ -433,16 +451,41 @@ button, input, textarea { font: inherit; }
   display: grid;
   place-items: center;
   padding: 4rem 1.2rem;
-  background: linear-gradient(180deg, rgba(255, 253, 247, 0.1), rgba(255, 253, 247, 0.7));
+  /* Plain warm ivory — complements the cool grey-white marble above
+     without competing with it. */
+  background: #f3ece0;
 }
 
 .rsvp-art {
-  width: min(100%, 760px);
-  padding: clamp(1.8rem, 5vw, 3.6rem);
+  width: min(100%, 620px);
+  padding: clamp(1.8rem, 5vw, 3.4rem);
   color: var(--gold);
 }
 
-.reply-by,
+/* ----- RSVP intro header (replaces the old "RSVP" + reply-by) ----- */
+.rsvp-intro {
+  text-align: center;
+  margin-bottom: 2.4rem;
+}
+
+.rsvp-intro h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(1.7rem, 4.6vw, 2.5rem);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  color: #6f5b33;
+}
+
+.rsvp-sub {
+  margin: 0.8rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: clamp(0.7rem, 2vw, 0.82rem);
+  color: #b08f4d;
+}
+
 form label span,
 legend {
   display: block;
@@ -452,41 +495,11 @@ legend {
   color: #bc8e46;
 }
 
-.reply-by {
-  text-align: center;
-  margin-bottom: 0.7rem;
-}
-
-.rsvp-art h2,
 .admin-header h2 {
   margin: 0;
   font-family: "Great Vibes", cursive;
   font-weight: 400;
   line-height: 0.96;
-  color: #bf8736;
-}
-
-.rsvp-art h2 {
-  text-align: center;
-  font-size: clamp(3.2rem, 10vw, 5rem);
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1.2rem 0 2.4rem;
-}
-
-.divider span {
-  width: 4.4rem;
-  height: 1px;
-  background: var(--line);
-}
-
-.divider b {
-  font-size: 0.8rem;
   color: #bf8736;
 }
 
@@ -727,6 +740,7 @@ fieldset {
   .invite-stage {
     min-height: 100vh;
     min-height: 100svh;
+    min-height: 100dvh;
     padding: 2rem 0.75rem 4rem;
     overflow: hidden;
   }

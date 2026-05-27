@@ -102,21 +102,17 @@
           </button>
         </div>
 
-        <div class="scroll-cue" id="scrollCue" aria-hidden="true">
-          RSVP below ↓
-        </div>
+        <button class="scroll-cue" id="scrollCue" type="button">
+          <span>RSVP Below</span>
+          <span class="scroll-cue__arrow" aria-hidden="true">↓</span>
+        </button>
       </section>
 
       <section class="rsvp-section" id="rsvp">
         <div class="rsvp-art">
-          <div class="reply-by">Reply by July 15</div>
-
-          <h2>RSVP</h2>
-
-          <div class="divider">
-            <span></span>
-            <b>♥</b>
-            <span></span>
+          <div class="rsvp-intro">
+            <h2>The Engagement of Ahmed &amp; Christine</h2>
+            <p class="rsvp-sub">Kindly let us know if you can join us</p>
           </div>
 
           <form id="rsvpForm">
@@ -177,11 +173,6 @@
             <label>
               <span>Dietary restrictions</span>
               <textarea name="dietaryRestrictions" rows="3" placeholder="Allergies, restrictions, or meal notes"></textarea>
-            </label>
-
-            <label>
-              <span>A note for the couple</span>
-              <textarea name="note" rows="4" placeholder="Share a wish, a memory, or a song request..."></textarea>
             </label>
 
             <button class="send-button" type="submit">Send reply</button>
