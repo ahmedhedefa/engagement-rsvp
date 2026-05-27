@@ -26,10 +26,10 @@
     Desktop uses your working values as the base.
     Opening/revealed values are now relative to the base values.
   */
-  --card-y-base: 10%;
+  --card-y-base: 5%;
   --card-top-base: 6%;
   --card-height-base: 56%;
-  --card-scale-base: 2.2;
+  --card-scale-base: 2.1;
 
   --card-closed-y: var(--card-y-base);
   --card-opening-y: calc(var(--card-y-base) - 20%);
@@ -88,7 +88,7 @@ button, input, textarea { font: inherit; }
 
 .envelope {
   position: relative;
-  width: min(92vw, 620px);
+  width: min(92vw, 560px);
   aspect-ratio: var(--env-aspect);
   perspective: 1600px;
   perspective-origin: 50% 28%;
