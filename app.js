@@ -57,7 +57,7 @@ openInvite.addEventListener("click", () => {
   // the guest scrolls themselves, or clicks the cue button.
   setTimeout(() => {
     scrollCue.classList.add("is-visible");
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 2600);
+  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 2000);
 });
 
 // Clicking the cue button smoothly scrolls down to the RSVP form.
