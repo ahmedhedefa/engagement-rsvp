@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="admin-page">
@@ -35,11 +35,18 @@
             <div><strong id="declineCount">0</strong><span>Not coming</span></div>
             <div><strong id="plusOneCount">0</strong><span>Plus ones</span></div>
           </div>
+
+          <div class="admin-actions">
+            <button id="downloadCsv" class="admin-download" type="button">
+              Download Excel CSV
+            </button>
+          </div>
+
           <div class="response-list" id="responseList"></div>
         </div>
       </section>
     </main>
 
-    <script src="/admin.js"></script>
+    <script src="admin.js"></script>
   </body>
 </html>

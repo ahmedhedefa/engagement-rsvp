@@ -74,6 +74,69 @@ function buildRsvpResponse(rsvps) {
   };
 }
 
+
+function csvValue(value) {
+  const stringValue = value == null ? "" : String(value);
+  return `"${stringValue.replace(/"/g, '""')}"`;
+}
+
+function buildGuestExportRows(rsvps) {
+  return rsvps.flatMap((item) => {
+    const mainName = item.name || "";
+    const dietaryRestrictions = item.dietaryRestrictions || "";
+    const submittedAt = item.submittedAt || "";
+    const attendance = item.attendance === "accept" ? "Coming" : "Not coming";
+
+    const rows = [
+      {
+        name: mainName,
+        guestType: "Main guest",
+        linkedRsvpName: mainName,
+        attendance,
+        dietaryRestrictions,
+        submittedAt
+      }
+    ];
+
+    if (item.plusOne === "yes") {
+      rows.push({
+        name: item.plusOneName || "Unnamed plus one",
+        guestType: "Plus one",
+        linkedRsvpName: mainName,
+        attendance,
+        dietaryRestrictions,
+        submittedAt
+      });
+    }
+
+    return rows;
+  });
+}
+
+function buildRsvpCsv(rsvps) {
+  const headers = [
+    "Name",
+    "Guest Type",
+    "Linked RSVP Name",
+    "Attendance",
+    "Dietary Restrictions",
+    "Submitted At"
+  ];
+
+  const rows = buildGuestExportRows(rsvps).map((row) => [
+    row.name,
+    row.guestType,
+    row.linkedRsvpName,
+    row.attendance,
+    row.dietaryRestrictions,
+    row.submittedAt
+  ]);
+
+  return [headers, ...rows]
+    .map((row) => row.map(csvValue).join(","))
+    .join("\n");
+}
+
 function isAdminRequest(req) {
   return Boolean(ADMIN_KEY) && req.get("x-admin-key") === ADMIN_KEY;
 }
@@ -148,6 +211,22 @@ app.get("/api/rsvps", (req, res) => {
   } catch (error) {
     console.error("Error reading RSVPs:", error);
     res.status(500).json({ error: "Could not read RSVPs" });
+  }
+});
+
+
+app.get("/api/rsvps/export.csv", (req, res) => {
+  if (!requireAdmin(req, res)) return;
+
+  try {
+    const csv = buildRsvpCsv(readRsvps());
+
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="rsvp-guest-list.csv"');
+    res.send(csv);
+  } catch (error) {
+    console.error("Error exporting RSVPs:", error);
+    res.status(500).json({ error: "Could not export RSVPs" });
   }
 });
 
