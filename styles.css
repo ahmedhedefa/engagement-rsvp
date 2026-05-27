@@ -75,6 +75,10 @@ button, input, textarea { font: inherit; }
   position: relative;
   padding: 4vh 1rem 6rem;
   overflow: hidden;
+
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.32)),
+    url("rsvp-background.png") center / cover no-repeat;
 }
 
 .envelope {
