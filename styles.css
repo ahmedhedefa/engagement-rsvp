@@ -481,9 +481,10 @@ button, input, textarea { font: inherit; }
 .rsvp-sub {
   margin: 1rem 0 0;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
-  font-size: clamp(0.78rem, 2vw, 0.95rem);
-  color: #b08f4d;
+  letter-spacing: 0.24em;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 600;
+  color: #9a7634;
 }
 
 /* ----- Event details: Date + Address columns ----- */
@@ -503,9 +504,10 @@ button, input, textarea { font: inherit; }
 .event-label {
   margin: 0 0 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
-  font-size: clamp(0.78rem, 2vw, 0.95rem);
-  color: #bc8e46;
+  letter-spacing: 0.24em;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 600;
+  color: #9a7634;
 }
 
 .event-line {
@@ -531,8 +533,11 @@ form label span,
 legend {
   display: block;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
-  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  letter-spacing: 0.24em;
+  font-size: clamp(0.9rem, 2vw, 1.08rem);
+  font-weight: 600;
+  color: #9a7634;
+}
   color: #bc8e46;
 }
 
