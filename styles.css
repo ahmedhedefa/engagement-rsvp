@@ -538,6 +538,8 @@ legend {
   font-weight: 600;
   color: #9a7634;
 }
+  color: #bc8e46;
+}
 
 .admin-header h2 {
   margin: 0;
@@ -757,6 +759,116 @@ fieldset {
   font-style: italic;
 }
 
+
+/* ============================================================
+   SUBMISSION POPUP
+   ============================================================ */
+
+.submit-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(70, 55, 32, 0.32);
+  backdrop-filter: blur(4px);
+  animation: submit-popup-fade 220ms ease forwards;
+}
+
+.submit-popup.is-hiding {
+  animation: submit-popup-fade-out 250ms ease forwards;
+}
+
+.submit-popup__card {
+  width: min(92vw, 440px);
+  padding: 2.2rem 1.8rem;
+  border: 1px solid rgba(169, 134, 66, 0.42);
+  background: rgba(255, 253, 247, 0.97);
+  box-shadow: 0 28px 80px rgba(95, 73, 37, 0.28);
+  text-align: center;
+  color: #6f5b33;
+  transform: translateY(8px) scale(0.98);
+  animation: submit-popup-card 260ms ease forwards;
+}
+
+.submit-popup__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(169, 134, 66, 0.5);
+  color: #b9883c;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.submit-popup__card h3 {
+  margin: 0;
+  color: #8f7138;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.submit-popup__card p {
+  margin: 0.8rem 0 1.4rem;
+  color: #6a583b;
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+}
+
+.submit-popup__button {
+  border: 1px solid #b9883c;
+  background: #b9883c;
+  color: var(--ivory);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  padding: 0.85rem 1.4rem;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.submit-popup__button:hover {
+  background: transparent;
+  color: #b9883c;
+  transform: translateY(-1px);
+}
+
+@keyframes submit-popup-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes submit-popup-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes submit-popup-card {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .submit-popup__card {
+    padding: 2rem 1.35rem;
+  }
+
+  .submit-popup__button {
+    width: 100%;
+  }
+}
+
 /* ============================================================
    MOBILE RESPONSIVE FIXES
    ============================================================ */
@@ -878,157 +990,3 @@ fieldset {
     width: 94vw;
   }
 }
-
-/* ============================================================
-   ADMIN UPDATES: bigger text, download button, delete button
-   ============================================================ */
-
-.admin-page {
-  font-size: 1.16rem;
-}
-
-.admin-section {
-  width: min(100% - 2rem, 1080px);
-}
-
-.admin-header p {
-  font-size: clamp(1rem, 2vw, 1.18rem);
-}
-
-.admin-header h2 {
-  font-size: clamp(3.6rem, 9vw, 5.6rem);
-}
-
-.admin-login {
-  max-width: 42rem;
-}
-
-.admin-login input {
-  font-size: 1.2rem;
-  padding: 1.15rem 0.75rem;
-}
-
-.admin-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin: 1.4rem 0 1.7rem;
-}
-
-.admin-download,
-.delete-response {
-  border: 1px solid #b9883c;
-  background: rgba(255, 253, 247, 0.72);
-  color: #8f7138;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  cursor: pointer;
-  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
-}
-
-.admin-download {
-  min-width: min(100%, 330px);
-  padding: 1rem 1.25rem;
-  font-size: 1rem;
-}
-
-.admin-download:hover,
-.delete-response:hover {
-  background: #b9883c;
-  color: var(--ivory);
-  transform: translateY(-1px);
-}
-
-.stats {
-  gap: 1.25rem;
-}
-
-.stats div {
-  padding: 1.4rem;
-}
-
-.stats strong {
-  font-size: clamp(3rem, 7vw, 4.2rem);
-}
-
-.stats span {
-  font-size: 1rem;
-}
-
-.response-list {
-  gap: 1.1rem;
-}
-
-.response-list article,
-.response-card {
-  padding: 1.35rem;
-}
-
-.response-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.8rem 1.25rem;
-}
-
-.response-card__main h3 {
-  font-size: clamp(1.65rem, 3vw, 2.1rem);
-  line-height: 1.05;
-  margin-bottom: 0.35rem;
-}
-
-.response-card__main p,
-.response-list .note,
-.submitted-at,
-.empty-admin {
-  font-size: clamp(1.08rem, 2vw, 1.25rem);
-  line-height: 1.45;
-}
-
-.response-email,
-.submitted-at {
-  color: rgba(106, 88, 59, 0.76);
-}
-
-.response-card__side {
-  display: grid;
-  justify-items: end;
-  align-content: start;
-  gap: 0.7rem;
-}
-
-.response-list .status {
-  font-size: clamp(0.95rem, 1.8vw, 1.08rem);
-  font-weight: 600;
-}
-
-.status--accept {
-  color: #6f8f38;
-}
-
-.status--decline {
-  color: #9b5b45;
-}
-
-.delete-response {
-  min-width: 8.2rem;
-  padding: 0.72rem 0.85rem;
-  font-size: 0.88rem;
-}
-
-@media (max-width: 768px) {
-  .admin-actions {
-    justify-content: stretch;
-  }
-
-  .admin-download {
-    width: 100%;
-  }
-
-  .response-card {
-    grid-template-columns: 1fr;
-  }
-
-  .response-card__side {
-    justify-items: start;
-  }
-}
-

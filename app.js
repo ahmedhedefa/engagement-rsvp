@@ -57,7 +57,7 @@ openInvite.addEventListener("click", () => {
   // the guest scrolls themselves, or clicks the cue button.
   setTimeout(() => {
     scrollCue.classList.add("is-visible");
-  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 2000);
+  }, PHASE_OPENING_MS + PHASE_REVEALED_MS + 2600);
 });
 
 // Clicking the cue button smoothly scrolls down to the RSVP form.
@@ -67,6 +67,48 @@ scrollCue.addEventListener("click", () => {
     block: "start"
   });
 });
+
+
+function showSubmitPopup(text) {
+  const existingPopup = document.querySelector(".submit-popup");
+  if (existingPopup) {
+    existingPopup.remove();
+  }
+
+  const popup = document.createElement("div");
+  popup.className = "submit-popup";
+  popup.setAttribute("role", "status");
+  popup.setAttribute("aria-live", "polite");
+  popup.innerHTML = `
+    <div class="submit-popup__card">
+      <div class="submit-popup__icon" aria-hidden="true">✓</div>
+      <h3>${text}</h3>
+      <p>Your RSVP has been received.</p>
+      <button class="submit-popup__button" type="button">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  const closeButton = popup.querySelector(".submit-popup__button");
+
+  function closePopup() {
+    popup.classList.add("is-hiding");
+    window.setTimeout(() => {
+      popup.remove();
+    }, 250);
+  }
+
+  closeButton.addEventListener("click", closePopup);
+
+  popup.addEventListener("click", (event) => {
+    if (event.target === popup) {
+      closePopup();
+    }
+  });
+
+  window.setTimeout(closePopup, 4500);
+}
 
 // ====================================================================
 // RSVP form
@@ -107,7 +149,8 @@ form.addEventListener("submit", async (event) => {
 
     form.reset();
     updatePlusOneDetails();
-    message.textContent = "Thank you. Your reply has been saved.";
+    message.textContent = "Successfully submitted.";
+    showSubmitPopup("Successfully submitted");
   } catch (error) {
     message.textContent = error.message;
   }
