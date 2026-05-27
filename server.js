@@ -91,7 +91,7 @@ function saveRsvp(req, res) {
   try {
     const {
       name,
-      email,
+      email = "",
       attendance,
       plusOne = "no",
       plusOneName = "",
@@ -99,7 +99,7 @@ function saveRsvp(req, res) {
       note = ""
     } = req.body;
 
-    if (!name || !email || !["accept", "decline"].includes(attendance)) {
+    if (!name || !["accept", "decline"].includes(attendance)) {
       return res.status(400).json({
         success: false,
         error: "Please complete the RSVP form."
