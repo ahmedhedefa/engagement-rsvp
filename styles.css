@@ -504,15 +504,15 @@ button, input, textarea { font: inherit; }
 .event-label {
   margin: 0 0 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.24em;
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  letter-spacing: 0.22em;
+  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
   font-weight: 600;
   color: #9a7634;
 }
 
 .event-line {
-  margin: 0.5rem 0;
-  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  margin: 0.55rem 0;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
   color: #6f5b33;
 }
 
@@ -533,8 +533,8 @@ form label span,
 legend {
   display: block;
   text-transform: uppercase;
-  letter-spacing: 0.24em;
-  font-size: clamp(0.9rem, 2vw, 1.08rem);
+  letter-spacing: 0.22em;
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
   font-weight: 600;
   color: #9a7634;
 }
@@ -608,7 +608,7 @@ fieldset {
   border: 1px solid var(--line);
   background: rgba(255, 253, 247, 0.58);
   text-align: center;
-  font-size: clamp(0.85rem, 2vw, 1.02rem);
+  font-size: clamp(1rem, 2.3vw, 1.2rem);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
