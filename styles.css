@@ -33,7 +33,7 @@
 
   --card-closed-y: var(--card-y-base);
   --card-opening-y: calc(var(--card-y-base) - 20%);
-  --card-revealed-y: calc(var(--card-y-base) - 12%);
+  --card-revealed-y: calc(var(--card-y-base) - 7%);
   --card-top: var(--card-top-base);
   --card-height: var(--card-height-base);
   --card-start-scale: var(--card-scale-base);
