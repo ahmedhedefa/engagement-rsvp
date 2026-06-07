@@ -15,7 +15,7 @@
 
   /* --- Animation timing --- */
   --t-flap: 1100ms;
-  --t-card-rise: 1150ms;
+  --t-card-rise: 1151ms;
   --t-card-flourish: 1050ms;
 
   /* The card stays behind the flap until this delay passes */
